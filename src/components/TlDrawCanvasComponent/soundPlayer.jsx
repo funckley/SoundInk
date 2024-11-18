@@ -85,7 +85,8 @@ export const playSound = async (color, note, polyphonyCount = 1, playbackSpeed, 
   }
 
   const sampleFile = `${instrumentFolder}-${sampleNumber}.mp3`;
-  const filePath = `/audio/${instrumentFolder}/${sampleFile}`;
+  // const filePath = `/audio/${instrumentFolder}/${sampleFile}`;
+  const filePath = `${import.meta.env.BASE_URL}audio/${instrumentFolder}/${sampleFile}`;
   const audioBuffer = await loadAudioBuffer(filePath);
 
   const settings = instrumentSettings[instrumentFolder] || {
