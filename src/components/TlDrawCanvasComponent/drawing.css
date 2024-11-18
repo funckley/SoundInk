@@ -1,0 +1,621 @@
+.tldraw-container {
+  user-select: none;
+}
+
+/* Main container style */
+.tldraw-container {
+  display: flex;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #eae6e1;
+}
+
+/* Controls sidebar styling */
+.controls {
+  position: fixed;
+  left: 0;
+  top: 0;
+  margin-top: 0px;
+  margin-left: 10px;
+  /* height: 100vh; */
+  height: 96%;
+  /* width: 12vw; */
+  /* width: 6vw; */
+  /* max-width: 6vw; */
+  max-width: 100px;
+  padding: 20px 10px;
+  background: linear-gradient(90deg, #8ABABF 0%, #8ABABF 100%);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  overflow-y: auto;
+  border: 2px solid #333;
+}
+
+/* Color button grid styling */
+.color-group {
+  /* display: flex; */
+  display: grid;
+  grid-template-columns: repeat(1, 2fr);
+  gap: 2vh;
+  width: 100%;
+  justify-content: center;
+  /* Center align the buttons */
+  margin-bottom: 5px;
+}
+
+.color-instrument {
+  /* display: vertical; */
+  /* display: grid; */
+  /* grid-template-columns: repeat(1, 1fr); */
+  /* gap: 2vh; */
+  /* width: 100%; */
+  aspect-ratio: 1 / 1;
+  justify-content: center;
+  /* Center align the buttons */
+  margin-bottom: 2vh;
+}
+
+/* General button styling for consistency */
+button {
+  box-sizing: border-box;
+  padding: 0px;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.8em;
+  aspect-ratio: 1 / 1;
+}
+
+.color-button {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1;
+  border: 2px solid #333 !important;
+  border-radius: 50% !important;
+  border-style: solid;
+  /* Change to dashed, dotted, etc., if needed */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.color-button:hover {
+  transform: scale(1.05);
+}
+
+.instrument-select-button {
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #704f4a;
+}
+
+.instrument-select-button:hover {
+  transform: scale(1.05);
+}
+
+/* Container for each color-instrument pair */
+.color-instrument-pair {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* gap: 10px; */
+  gap: 0.5vw;
+  width: 100%;
+  justify-content: center;
+}
+
+
+/* Hover effect for buttons */
+.color-button:hover,
+.instrument-select-button:hover {
+  transform: scale(1.05);
+}
+
+/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+.eraser-container,
+.steps-group,
+.play-controls-group,
+.grid-loop-group,
+.scale-container {
+  display: flex;
+  /* Arrange buttons horizontally */
+  gap: 0.5vw;
+  /* Space between the Grid and Loop buttons */
+  width: 100%;
+  /* Adjust width as needed */
+  height: 3em;
+  justify-content: center;
+  /* Center align the buttons */
+  align-items: center;
+  /* margin-bottom: 10px; */
+  margin-top: 10px;
+  /* Adjust spacing above the group */
+}
+
+.color-button,
+.instrument-select-button,
+.eraser-button,
+.trash-button,
+.undo,
+.redo,
+.play-stop-button,
+.grid-button,
+.loop-button,
+.scale-button {
+  width: 10vw;
+  /* height: 0%; */
+  padding: 0px;
+  margin: 0 auto;
+  border: 2px solid #333;
+  border-radius: 50%;
+  font-size: 1.8em;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, background-color 0.2s;
+  text-align: center;
+}
+
+.eraser-button {
+  background-color: #2e2b28;
+}
+
+.eraser-button.active {
+  background-color: #6d6767;
+}
+
+.eraser-button:hover {
+  transform: scale(1.05);
+}
+
+.trash-button {
+  background-color: #ab3230;
+}
+
+.trash-button.active {
+  background-color: #ab0705;
+}
+
+.trash-button:hover {
+  transform: scale(1.05);
+}
+
+.undo,
+.redo {
+  color: #182429;
+  background-color: #2b6d89;
+}
+
+.undo:hover,
+.redo:hover {
+  transform: scale(1.05);
+  background-color: #0378A6;
+}
+
+.play-mode {
+  background-color: #0b9a10;
+}
+
+.play-mode:hover {
+  background-color: #0fb315;
+  transform: scale(1.05);
+}
+
+.stop-mode {
+  background-color: #b72929;
+}
+
+.stop-mode:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
+
+.loop-button {
+  background-color: #d98020;
+}
+
+.loop-button.active {
+  background-color: #d95420;
+}
+
+.loop-button:hover {
+  background-color: #be4c1f;
+  transform: scale(1.05);
+}
+
+.grid-button {
+  background-color: #5a7fbf;
+}
+
+.grid-button:hover {
+  transform: scale(1.05);
+  background-color: #2164d7;
+}
+
+/* Scale Button */
+.scale-button {
+  background-color: #5a7fbf;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scale-button:hover {
+  transform: scale(1.05);
+  background-color: #2164d7;
+}
+
+
+/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+/* Instrument selection modal styling */
+.instrument-selection-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #4e76bb;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 350px; /* Adjust to fit within the screen */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Add space between items */
+}
+
+.instrument-selection-modal h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  text-align: center;
+  color: #333;
+}
+
+.instrument-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* .instrument-option-button {
+  padding: 24px 24px;
+  background-color: #3f9ea9;
+  color: #043f5d;
+  border: 2px solid #310e15;
+  border-radius: 15%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+} */
+
+
+.instrument-option-button {
+  width: 90px;
+  /* Adjust button size */
+  height: 90px;
+  /* Adjust button size */
+  background-color: #901e29;
+  /* Button color */
+  border: 2px solid #901e29;
+  border-radius: 20%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instrument-option-button:hover {
+  background-color: #9c1825;
+  color: #87acbe;
+}
+
+.close-modal-button {
+  width: 60px;
+  height: 60px;
+  margin-top: 45px;
+  padding: 18px 18px;
+  background-color: #9e2424;
+  color: white;
+  border-radius: 15%;
+  border: 2px solid #631616;
+  /* border-color: #310e15 !important; */
+  cursor: pointer;
+}
+
+.close-modal-button:hover {
+  background-color: #c32b2b;
+}
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+.iconPlay,
+.iconDo,
+.iconStop,
+.iconLoop,
+.iconGrid,
+.iconTempo,
+.iconEraser,
+.iconTrash,
+.iconInstrument,
+.iconQuit {
+  width: auto;
+  /* Allow the SVG to scale */
+  height: auto;
+  /* Allow the SVG to scale */
+  max-width: 100%;
+  /* Adjust as needed to control size within the button */
+  max-height: 100%;
+  /* Adjust as needed to control size within the button */
+  display: block;
+  /* Ensure the SVG is centered */
+  margin: center;
+  /* Center the SVG within the button */
+  transform: scale(0.7);
+}
+
+.iconGrid {
+  transform: scale(1);
+}
+
+.iconQuit {
+  transform: scale(1.8);
+}
+
+/* .iconQuit2 {
+  transform: scale(1.8);
+} */
+
+.iconDo {
+  transform: scale(0.7);
+}
+
+.iconLoop {
+  transform: scale(0.9);
+}
+
+.instrument-icon {
+  width: auto;
+  /* Allow the SVG to scale */
+  height: auto;
+  /* Allow the SVG to scale */
+  max-width: 100%;
+  /* Adjust as needed to control size within the button */
+  max-height: 100%;
+  /* Adjust as needed to control size within the button */
+  display: block;
+  /* Ensure the SVG is centered */
+  margin: center;
+  /* Center the SVG within the button */
+  transform: scale(0.8);
+}
+
+.instrument-sidebar-icon {
+  width: auto;
+  /* Allow the SVG to scale */
+  height: auto;
+  /* Allow the SVG to scale */
+  max-width: 100%;
+  /* Adjust as needed to control size within the button */
+  max-height: 100%;
+  /* Adjust as needed to control size within the button */
+  display: block;
+  /* Ensure the SVG is centered */
+  margin: center;
+  /* Center the SVG within the button */
+  transform: scale(0.65);
+}
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+/* Brush size and Playback Speed slider styling with Icon labels */
+.brush-size-group,
+.slider-group {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  width: 100%;
+  /* margin-bottom: 50px; */
+  /* margin-top: 50px; */
+  margin-top: 5vh;
+  justify-content: center;
+  /* Center the slider */
+}
+
+.brush-size-group label,
+.slider-group label {
+  font-size: 1.8em;
+}
+
+.slider-group input[type="range"] {
+  -webkit-appearance: none;
+  /* Remove default styling */
+  appearance: none;
+  width: 130px !important;
+  /* This becomes the "height" visually due to rotation */
+  height: 40px;
+  /* This becomes the "width" visually */
+  background: #6d72af;
+  border-radius: 15px;
+  outline: none;
+  cursor: pointer;
+  transform: rotate(-90deg);
+  /* Rotate the slider */
+}
+
+.brush-size-group input[type="range"] {
+  -webkit-appearance: none;
+  /* Remove default styling */
+  appearance: none;
+  width: 128px !important;
+  /* This becomes the "height" visually due to rotation */
+  height: 40px;
+  /* This becomes the "width" visually */
+  background: #6d72af;
+  border-radius: 15px;
+  outline: none;
+  cursor: pointer;
+  transform: rotate(-90deg);
+  /* Rotate the slider */
+}
+
+.brush-size-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 50px;
+  height: 50px;
+  background-color: #494f97;
+  /* Set background color */
+  background-image: url('./../../assets/icons/brush-svgrepo-com-2.svg');
+  /* Add icon to the thumb */
+  /* background-size: contain; */
+  background-size: 75%;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Prevent background repeating */
+  border: 2px solid #310e15;
+  /* Add border */
+  border-radius: 50%;
+  /* Make the thumb circular */
+  cursor: pointer;
+  transform: rotate(90deg);
+  /* Rotate thumb icon back to the original orientation */
+  transition: background-color 0.3s;
+}
+
+.slider-group input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 50px;
+  /* Increase thumb size */
+  height: 50px;
+  /* Increase thumb size */
+  background-color: #494f97;
+  /* Set background color */
+  background-image: url('./../../assets/icons/metronome-tempo-beat-bpm-svgrepo-com-3.svg');
+  /* Add icon to the thumb */
+  /* background-size: contain; */
+  background-size: 75%;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Prevent background repeating */
+  border: 2px solid #310e15;
+  /* Add border */
+  border-radius: 50%;
+  /* Make the thumb circular */
+  cursor: pointer;
+  transform: rotate(90deg);
+  /* Rotate thumb icon back to the original orientation */
+  transition: background-color 0.3s;
+}
+
+.brush-size-group input[type="range"]::-moz-range-thumb {
+  width: 40px;
+  /* Increase thumb size */
+  height: 40px;
+  /* Increase thumb size */
+  background-color: #494f97;
+  /* Set background color */
+  background-image: url('./../../assets/icons/Brush.svg');
+  /* Add icon to the thumb */
+  background-size: contain;
+  /* Make sure the icon fits within the thumb */
+  background-repeat: no-repeat;
+  /* Prevent background repeating */
+  border: 2px solid #310e15;
+  /* Add border */
+  border-radius: 50%;
+  /* Make the thumb circular */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.slider-group input[type="range"]::-moz-range-thumb {
+  width: 40px;
+  /* Increase thumb size */
+  height: 40px;
+  /* Increase thumb size */
+  background-color: #494f97;
+  /* Set background color */
+  background-image: url('./../../assets/icons/Tempo.svg');
+  /* Add icon to the thumb */
+  background-size: contain;
+  /* Make sure the icon fits within the thumb */
+  background-repeat: no-repeat;
+  /* Prevent background repeating */
+  border: 2px solid #310e15;
+  /* Add border */
+  border-radius: 50%;
+  /* Make the thumb circular */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.vertical-sliders {
+  display: flex;
+  gap: 10px;
+  /* Adjust spacing between sliders */
+  justify-content: center;
+  /* Center the sliders */
+  width: 50%;
+}
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+.scale-icon {
+  width: 30px;
+  height: 30px;
+}
+
+/* Scale Selection Modal */
+.scale-selection-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #a1c181;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 350px; /* Adjust to fit within the screen */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Add space between items */
+}
+
+.scale-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.scale-option-button {
+  background: transparent;
+  background-color: #357a92;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.scale-option-button:hover {
+  background-color: #266479;
+  transform: scale(1.05);
+}
+
+.scale-option-icon {
+  width: 40px;
+  height: 40px;
+}
