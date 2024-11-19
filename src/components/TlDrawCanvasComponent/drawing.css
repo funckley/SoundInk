@@ -619,3 +619,151 @@ button {
   width: 40px;
   height: 40px;
 }
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+/* General styles for smaller screens */
+@media (max-width: 1024px) {
+  .tldraw-container {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  /* Adjust controls sidebar for smaller screens */
+  .controls {
+    height: auto;
+    width: 90px; /* Narrower for smaller screens */
+    max-width: 90px;
+    padding: 10px 5px;
+    gap: 15px;
+    border: 2px solid #222;
+  }
+
+  .color-group {
+    grid-template-columns: repeat(1, 1fr); /* Single-column layout */
+    gap: 1.5vh;
+  }
+
+  .color-instrument-pair {
+    gap: 0.5vw;
+  }
+
+  /* Buttons resized for smaller screens */
+  .color-button,
+  .instrument-select-button,
+  .eraser-button,
+  .trash-button,
+  .undo,
+  .redo,
+  .play-stop-button,
+  .grid-button,
+  .loop-button,
+  .scale-button {
+    width: 8vw;
+    font-size: 1.4em;
+  }
+
+  .slider-group input[type="range"],
+  .brush-size-group input[type="range"] {
+    width: 100px !important;
+  }
+
+  .iconPlay,
+  .iconStop,
+  .iconLoop,
+  .iconGrid,
+  .iconTempo,
+  .iconEraser,
+  .iconTrash,
+  .iconInstrument {
+    transform: scale(0.6); /* Smaller icons */
+  }
+}
+
+/* Further adjustments for very small screens (like phones) */
+@media (max-width: 768px) {
+  .controls {
+    height: auto;
+    width: 80px;
+    max-width: 80px;
+    gap: 10px;
+  }
+
+  .color-button,
+  .instrument-select-button,
+  .eraser-button,
+  .trash-button,
+  .undo,
+  .redo,
+  .play-stop-button,
+  .grid-button,
+  .loop-button,
+  .scale-button {
+    width: 10vw;
+    height: 10vw;
+    font-size: 1.2em;
+  }
+
+  .iconPlay,
+  .iconStop,
+  .iconLoop,
+  .iconGrid,
+  .iconTempo,
+  .iconEraser,
+  .iconTrash,
+  .iconInstrument {
+    transform: scale(0.5); /* Smaller icons */
+  }
+
+  .instrument-selection-modal,
+  .scale-selection-modal {
+    max-width: 250px;
+    padding: 15px;
+    gap: 8px;
+  }
+
+  .instrument-option-button,
+  .scale-option-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  .iconQuit {
+    transform: scale(1.5);
+  }
+
+  .scale-option-icon,
+  .instrument-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Specific tweaks for iPads or tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .controls {
+    width: 100px;
+    max-width: 100px;
+    gap: 20px;
+  }
+
+  .instrument-selection-modal,
+  .scale-selection-modal {
+    max-width: 300px;
+    padding: 20px;
+  }
+
+  .instrument-option-button,
+  .scale-option-button {
+    width: 75px;
+    height: 75px;
+  }
+
+  .iconQuit {
+    transform: scale(1.6);
+  }
+}
