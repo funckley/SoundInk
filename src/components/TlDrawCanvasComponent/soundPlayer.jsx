@@ -1,5 +1,30 @@
 import { mapNoteToSampleNumber, mapColorToInstrumentFolder } from './soundMappings'; // Import both mappings
 
+// List of instruments and the number of sound files for each
+const instruments = {
+  bass: 25,       // Number of sound files for "bass"
+  pianohigh: 25,  // Number of sound files for "pianohigh"
+  pianolow: 25,   // Number of sound files for "pianolow"
+  marimba: 25,    // Add all instruments and their file counts
+  epiano: 25,
+  guitar: 25,
+  synthflute: 25,
+  floom: 25,
+  strings: 25
+};
+
+// Function to dynamically generate file paths
+const generateSoundFiles = () => {
+  const soundFiles = [];
+  for (const [instrument, count] of Object.entries(instruments)) {
+    for (let i = 1; i <= count; i++) {
+      const paddedNumber = String(i).padStart(3, '0'); // Ensures numbers are zero-padded (e.g., 001, 002)
+      soundFiles.push(`${import.meta.env.BASE_URL}audio/${instrument}/${instrument}-${paddedNumber}.mp3`);
+    }
+  }
+  return soundFiles;
+};
+
 // Initialize the Web Audio context globally
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -27,6 +52,43 @@ limiterNode.release.setValueAtTime(0.25, audioCtx.currentTime); // Short release
 // Connect the master gain to the limiter, and then connect to audio context destination
 masterGainNode.connect(limiterNode);
 limiterNode.connect(audioCtx.destination);
+
+// Updated Preload Function
+export const preloadSounds = async () => {
+  const soundFiles = generateSoundFiles(); // Generate all sound file paths dynamically
+  try {
+    for (const filePath of soundFiles) {
+      if (!bufferCache[filePath]) {
+        const response = await fetch(filePath);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        bufferCache[filePath] = audioBuffer; // Store in cache
+        console.log(`Preloaded: ${filePath}`);
+      }
+    }
+  } catch (error) {
+    console.error('Error preloading sounds:', error);
+  }
+};
+
+// Function to load an audio buffer for a specific sample
+// const loadAudioBuffer = async (filePath) => {
+//   if (bufferCache[filePath]) {
+//     return bufferCache[filePath]; // Return cached buffer if it exists
+//   }
+
+//   if (Object.keys(bufferCache).length >= MAX_CACHE_SIZE) {
+//     // Remove the oldest entry in the cache if it exceeds the limit
+//     delete bufferCache[Object.keys(bufferCache)[0]];
+//   }
+
+//   const response = await fetch(filePath);
+//   const arrayBuffer = await response.arrayBuffer();
+//   const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+//   bufferCache[filePath] = audioBuffer; // Cache the loaded buffer
+//   return audioBuffer;
+// };
 
 // Function to load an audio buffer for a specific sample
 const loadAudioBuffer = async (filePath) => {
