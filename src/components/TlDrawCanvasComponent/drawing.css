@@ -526,7 +526,7 @@ button:hover .instrument-sidebar-icon {
   height: 50px;
   background-color: #ffe2d6;
   background-image: url('./../../assets/icons/brush-svgrepo-com-3.svg');
-  background-size: 75%;
+  background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
   /* border: 2px solid #310e15; */
@@ -555,7 +555,7 @@ button:hover .instrument-sidebar-icon {
   height: 50px;
   background-color: #ffe2d6;
   background-image: url('./../../assets/icons/metronome-tempo-beat-bpm-svgrepo-com-2.svg');
-  background-size: 75%;
+  background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
   border: 2px solid #310e15;
@@ -607,10 +607,10 @@ button:hover .instrument-sidebar-icon {
   /* border: 2px solid #310e15; */
   border: 1px solid #ffe2d6;
   box-shadow: 
-    0 0 5px #ffc400,
+    0 0 5px #ffe2d6,
     0 0 3px #ffc400,
     0 0 5px #ffc400,
-    0 0 7px #ffc400;
+    0 0 7px #ffe2d6;
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.3s;
