@@ -5,6 +5,7 @@ import GridCanvas from './components/GridComponent/grid';
 import { PlaybackSpeedProvider } from './components/TlDrawCanvasComponent/playbackSpeedContext'; // Import the provider
 import './App.css';
 import { preloadSounds } from './components/TlDrawCanvasComponent/soundPlayer';
+import { BpmProvider } from './components/TlDrawCanvasComponent/bpmContext';
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,12 +26,11 @@ function App() {
 
   return (
     <PlaybackSpeedProvider> {/* Wrap your app with PlaybackSpeedProvider */}
-      <div className="app-container">
-        <TlDrawCanvasComponent brushSize={brushSize} />
-        {/* <TlDrawCanvasComponent /> */}
-        {/* <GridCanvas /> */}
-        {/* <P5GridCanvas /> */}
-      </div>
+      <BpmProvider>
+        <div className="app-container">
+          <TlDrawCanvasComponent brushSize={brushSize} />
+        </div>
+      </BpmProvider>
     </PlaybackSpeedProvider>
   );
 }

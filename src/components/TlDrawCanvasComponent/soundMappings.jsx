@@ -1,63 +1,5 @@
-// Major
-// export const mapRowToNote = {
-//   0:  'C4',  // Highest row corresponds to C4
-//   1:  'B3',
-//   2:  'A3',
-//   3:  'G3',
-//   4:  'F3',
-//   5:  'E3',
-//   6:  'D3',
-//   7:  'C3',  // Middle C
-//   8:  'B2',
-//   9:  'A2',
-//   10: 'G2',
-//   11: 'F2',
-//   12: 'E2',
-//   13: 'D2',
-//   14: 'C2',  // Lowest C
-// };
-
-// Harmonic Minor
-// export const mapRowToNote = {
-//   0:  'C4',  // Highest row corresponds to C4
-//   1:  'B3',  // Raised 7th
-//   2:  'G#3', // Minor 6th
-//   3:  'G3',  // 5th
-//   4:  'F3',  // 4th
-//   5:  'D#3', // Minor 3rd
-//   6:  'D3',  // 2nd
-//   7:  'C3',  // Root (lower octave)
-//   8:  'B2',  // Raised 7th (lower octave)
-//   9:  'G#2', // Minor 6th (lower octave)
-//   10: 'G2',  // 5th (lower octave)
-//   11: 'F2',  // 4th (lower octave)
-//   12: 'D#2', // Minor 3rd (lower octave)
-//   13: 'D2',  // 2nd (lower octave)
-//   14: 'C2',  // Lowest root (C2)
-// };
-
-// Melodic Minor
-// export const mapRowToNote = {
-//   0:  'C4',  // Highest row corresponds to C4
-//   1:  'B3',  // Raised 7th
-//   2:  'A3', // Minor 6th
-//   3:  'G3',  // 5th
-//   4:  'F3',  // 4th
-//   5:  'D#3', // Minor 3rd
-//   6:  'D3',  // 2nd
-//   7:  'C3',  // Root (lower octave)
-//   8:  'B2',  // Raised 7th (lower octave)
-//   9:  'A2', // Minor 6th (lower octave)
-//   10: 'G2',  // 5th (lower octave)
-//   11: 'F2',  // 4th (lower octave)
-//   12: 'D#2', // Minor 3rd (lower octave)
-//   13: 'D2',  // 2nd (lower octave)
-//   14: 'C2',  // Lowest root (C2)
-// };
-
-
 // Define all scales
-const scales = {
+export const scales = {
   major: {
     0: 'C4', 1: 'B3', 2: 'A3', 3: 'G3', 4: 'F3', 5: 'E3', 6: 'D3', 7: 'C3',
     8: 'B2', 9: 'A2', 10: 'G2', 11: 'F2', 12: 'E2', 13: 'D2', 14: 'C2',
@@ -70,7 +12,31 @@ const scales = {
     0: 'C4', 1: 'B3', 2: 'A3', 3: 'G3', 4: 'F3', 5: 'D#3', 6: 'D3', 7: 'C3',
     8: 'B2', 9: 'A2', 10: 'G2', 11: 'F2', 12: 'D#2', 13: 'D2', 14: 'C2',
   },
+  naturalMinor: {
+    0: 'C4', 1: 'A#3', 2: 'G#3', 3: 'G3', 4: 'F3', 5: 'D#3', 6: 'D3', 7: 'C3',
+    8: 'A#2', 9: 'G#2', 10: 'G2', 11: 'F2', 12: 'D#2', 13: 'D2', 14: 'C2',
+  },
 };
+
+// Function to determine the direction of the melody
+export const getDirection = (notes) => {
+  if (notes.length < 2) return null; // Not enough notes to determine direction
+  return notes[1] > notes[0] ? 'ascending' : 'descending';
+};
+
+
+export function getScaleForDirection(direction) {
+  if (direction === "ascending") {
+    return scales.melodicMinor; // Use melodic minor for ascending
+  } else if (direction === "descending") {
+    return scales.naturalMinor; // Use natural minor for descending
+  } else if (direction === "tension") {
+    return scales.harmonicMinor; // Use harmonic minor for
+  } else if (direction === "release") {
+    return scales.major; // Use major for release
+  }
+  return null; // Default case (shouldn't happen)
+}
 
 // Export a default scale
 let selectedScale = 'harmonicMinor';

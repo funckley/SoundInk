@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, createContext, useContext } from 'react';
 import { getStroke } from 'perfect-freehand'; // Used to calculate stroke paths for drawing
 import './drawing.css'; // Importing the associated CSS file for styles
 import { getSvgPathFromStroke } from './utils'; // Utility function to convert stroke to SVG path
@@ -10,6 +10,9 @@ import { v4 as uuidv4 } from 'uuid'; // To generate unique IDs
 import GridCanvas from '../GridComponent/grid';
 import { firstColumn, fistColumnScan, numDotsX, numDotsY, dotRadius } from '../GridComponent/gridConfig';
 import { useMediaQuery } from 'react-responsive';
+import { useBpm } from './BpmContext'; // Import the BPM context
+import { scales, getDirection, getScaleForDirection } from './soundMappings';
+
 
 import PlayIcon from './../../assets/icons/play-svgrepo-com-3.svg';
 import StopIcon from './../../assets/icons/stop-svgrepo-com-3.svg';
@@ -34,6 +37,7 @@ import synthIcon from './../../assets/icons/keyboard-piano-synth-midi-vst-svgrep
 import majorIcon from './../../assets/icons/sun-2-svgrepo-com-6.svg';
 import harmonicMinorIcon from './../../assets/icons/moon-fog-svgrepo-com-3.svg';
 import melodicMinorIcon from './../../assets/icons/saturn-science-svgrepo-com-3.svg';
+import { log } from 'tone/build/esm/core/util/Debug';
 
 const instrumentIcons = {
   floom: synthIcon,
@@ -57,6 +61,7 @@ const colors = ['#161a1d', '#ffb703', '#fb8500', '#023047', '#219ebc', '#9a031e'
 
 const sizes = [25, 50];
 const MAX_DELAY = 600; // Maximum delay in milliseconds for the slowest speed
+
 
 const ERASER_COLOR = '#eae6e1'; // Choose a color that represents the eraser
 // Options for stroke drawing (customizable for smoothness, taper, etc.)
@@ -104,9 +109,10 @@ const TlDrawCanvasComponent = () => {
   let playbackStopped = useRef(false); // To stop playback externally
   const [scannedColumn, setScannedColumn] = useState(-1);
   const [previousColor, setPreviousColor] = useState(colors[0]);
-  const [bpm, setBpm] = useState(250); // Default BPM is 250
+  // const [bpm, setBpm] = useState(250); // Default BPM is 250
   const [currentScale, setCurrentScale] = useState('harmonicMinor'); // Default scale is harmonic minor
   const [isScaleMenuOpen, setIsScaleMenuOpen] = useState(false); // Toggle for pop-up
+  const { bpm, setBpm } = useBpm(); // Access bpm and setBpm from context
 
 
   // Add this at the top of your component, along with other state variables
@@ -432,6 +438,102 @@ const TlDrawCanvasComponent = () => {
     }
   };
 
+// const handlePlay = async () => {
+//   if (isPlaying) return;
+
+//   setIsPlaying(true);
+//   playbackStopped.current = false;
+
+//   do {
+//     for (let column = fistColumnScan; column < numDotsX; column++) {
+//       if (playbackStopped.current) break;
+
+//       setCurrentColumn(column); // Update the scanned column
+//       setScannedColumn(column);
+
+//       // Determine if the current column is a multiple of 4 relative to `firstColumn`
+//       const isAccentColumn = (column - firstColumn) % 4 === 0;
+
+//       // Check the latest colorInstrumentMap and play sounds accordingly
+//       if (intersectedDots.current[column]) {
+//         const playPromises = [];
+//         for (const row in intersectedDots.current[column]) {
+//           const { color } = intersectedDots.current[column][row];
+
+//           // Check for descending logic only for melodicMinor
+//           let mapRowToNote;
+//           if (currentScale === "melodicMinor") {
+//             const nextColumn = intersectedDots.current[column + 1];
+
+//             // Determine if the next column has a triggered note in the row below the current one
+//             const isRowBelowTriggered =
+//               nextColumn && nextColumn[Number(row) + 1] !== undefined;
+
+//             const direction = isRowBelowTriggered ? "descending" : "ascending";
+//             mapRowToNote = getScaleForDirection(direction); // Get the appropriate scale
+//           } else {
+//             mapRowToNote = scales[currentScale]; // Use the selected scale directly
+//           }
+
+//           const note = mapRowToNote[row];
+//           if (note) {
+//             playPromises.push(
+//               playSound(
+//                 color,
+//                 note,
+//                 1,
+//                 bpm,
+//                 intersectedDots.current[column][row].lineId,
+//                 colorInstrumentMapRef.current,
+//                 isAccentColumn
+//               )
+//             );
+//           }
+//         }
+//         await Promise.all(playPromises);
+//       }
+
+//       // Dynamically adjust tempo using `playbackSpeedRef.current`
+//       await new Promise((resolve) =>
+//         setTimeout(resolve, playbackSpeedRef.current)
+//       );
+//     }
+//   } while (loopRef.current && !playbackStopped.current); // Check `loopRef.current` at the end of each pass
+
+//   setCurrentColumn(-1);
+//   setScannedColumn(-1);
+//   setIsPlaying(false);
+// };
+
+// Check if rows 0, 7, 14 are triggered in the next 3 columns
+const isRowTriggeredInNextColumns = (currentColumn, intersectedDots, range = 3) => {
+  const targetRows = [0, 7, 14]; // The specific rows to check
+  for (let nextCol = currentColumn + 1; nextCol <= currentColumn + range; nextCol++) {
+    if (intersectedDots[nextCol]) {
+      for (const row of targetRows) {
+        if (intersectedDots[nextCol][row]) {
+          return true; // A target row is triggered in the next 3 columns
+        }
+      }
+    }
+  }
+  return false; // None of the target rows are triggered
+};
+
+const areRowsNotTriggeredInNextColumns = (currentColumn, intersectedDots, range = 3) => {
+  const targetRows = [0, 7, 14]; // The specific rows to check
+  for (let nextCol = currentColumn + 1; nextCol <= currentColumn + range; nextCol++) {
+    if (intersectedDots[nextCol]) {
+      for (const row of targetRows) {
+        if (intersectedDots[nextCol][row]) {
+          return false; // A target row is triggered, so return false
+        }
+      }
+    }
+  }
+  return true; // None of the target rows are triggered
+};
+
 const handlePlay = async () => {
   if (isPlaying) return;
 
@@ -453,28 +555,68 @@ const handlePlay = async () => {
         const playPromises = [];
         for (const row in intersectedDots.current[column]) {
           const { color } = intersectedDots.current[column][row];
-          // const note = mapRowToNote[row];
-          const mapRowToNote = getMapRowToNote();
-          const note = mapRowToNote[row];
 
-          // Reference the updated colorInstrumentMap for each sound
-          playPromises.push(
-            playSound(
-              color,
-              note,
-              1,
-              playbackSpeedRef.current, // Use the updated playbackSpeedRef
-              intersectedDots.current[column][row].lineId,
-              colorInstrumentMapRef.current,
-              isAccentColumn
-            )
-          );
+          let mapRowToNote;
+
+          // Check for descending logic only for melodicMinor
+          if (currentScale === "melodicMinor") {
+            let descendingSteps = 0; // Counter for descending steps
+            let ascendingSteps = 0; // Counter for ascending steps
+            let direction = "ascending"; // Default direction
+
+            // Traverse future columns to calculate descent length
+            for (let offset = 1; offset <= 3; offset++) {
+              const nextColumn = intersectedDots.current[column + offset];
+              if (nextColumn && nextColumn[Number(row) + offset] !== undefined) {
+                descendingSteps++;
+              } else {
+                break;
+              }
+            }
+
+            // Determine scale based on descending length
+            if ((descendingSteps > 2) && !(isRowTriggeredInNextColumns(column, intersectedDots.current))) {
+              direction = "descending";
+            } else if ((descendingSteps > 2) && (areRowsNotTriggeredInNextColumns(column, intersectedDots.current, 1))) {
+              direction = "descending";
+            } else if (areRowsNotTriggeredInNextColumns(column, intersectedDots.current, 1)) {
+              direction = "descending";
+            }
+
+            mapRowToNote = getScaleForDirection(direction);
+
+
+          } else if (currentScale === "harmonicMinor") {
+            getScaleForDirection("tension");
+            mapRowToNote = scales[currentScale]; // Use the selected scale directly
+          } else if (currentScale === "major") {
+            getScaleForDirection("release");
+            mapRowToNote = scales[currentScale]; // Use the selected scale directly
+          }
+          // } else {
+          //   mapRowToNote = scales[currentScale]; // Use the selected scale directly
+          // }
+
+          const note = mapRowToNote[row];
+          if (note) {
+            playPromises.push(
+              playSound(
+                color,
+                note,
+                1,
+                bpm,
+                intersectedDots.current[column][row].lineId,
+                colorInstrumentMapRef.current,
+                isAccentColumn
+              )
+            );
+          }
         }
         await Promise.all(playPromises);
       }
 
       // Dynamically adjust tempo using `playbackSpeedRef.current`
-      await new Promise(resolve =>
+      await new Promise((resolve) =>
         setTimeout(resolve, playbackSpeedRef.current)
       );
     }
@@ -484,6 +626,8 @@ const handlePlay = async () => {
   setScannedColumn(-1);
   setIsPlaying(false);
 };
+
+
 
   // // Undo and redo logic for managing drawing history
   const handleUndo = () => {
@@ -695,9 +839,22 @@ return (
               setBpm(bpmValue); // Set BPM in state
               const playbackSpeedValue = Math.round(60000 / bpmValue); // Convert BPM to delay in ms
               setPlaybackSpeed(playbackSpeedValue); // Update playback speed
-              console.log("Current BPM:", bpmValue, "Playback Speed (ms):", playbackSpeedValue);
+              // console.log("Current BPM:", bpmValue, "Playback Speed (ms):", playbackSpeedValue);
             }}
           />
+          {/* <input
+            id="bpm"
+            type="range"
+            min="60"
+            max="400"
+            step="5"
+            value={bpm}
+            onChange={(e) => {
+              const bpmValue = Number(e.target.value);
+              setBpm(bpmValue);
+              console.log("Current BPM:", bpmValue);
+            }}
+          /> */}
         </div>
       </div>
     </div>

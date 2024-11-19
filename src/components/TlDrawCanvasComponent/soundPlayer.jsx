@@ -1,4 +1,5 @@
 import { mapNoteToSampleNumber, mapColorToInstrumentFolder } from './soundMappings'; // Import both mappings
+import { useBpm } from './BpmContext'; // Import the BPM context
 
 // List of instruments and the number of sound files for each
 const instruments = {
@@ -72,25 +73,6 @@ export const preloadSounds = async () => {
 };
 
 // Function to load an audio buffer for a specific sample
-// const loadAudioBuffer = async (filePath) => {
-//   if (bufferCache[filePath]) {
-//     return bufferCache[filePath]; // Return cached buffer if it exists
-//   }
-
-//   if (Object.keys(bufferCache).length >= MAX_CACHE_SIZE) {
-//     // Remove the oldest entry in the cache if it exceeds the limit
-//     delete bufferCache[Object.keys(bufferCache)[0]];
-//   }
-
-//   const response = await fetch(filePath);
-//   const arrayBuffer = await response.arrayBuffer();
-//   const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-//   bufferCache[filePath] = audioBuffer; // Cache the loaded buffer
-//   return audioBuffer;
-// };
-
-// Function to load an audio buffer for a specific sample
 const loadAudioBuffer = async (filePath) => {
   if (bufferCache[filePath]) {
     return bufferCache[filePath]; // Return cached buffer if it exists
@@ -129,7 +111,85 @@ const getRandomVariation = (min, max) => {
   return randomValue * (max - min) + min;
 };
 
-export const playSound = async (color, note, polyphonyCount = 1, playbackSpeed, lineId, colorInstrumentMap, accent = false) => {
+// export const playSound = async (color, note, polyphonyCount = 1, playbackSpeed, lineId, colorInstrumentMap, accent = false) => {
+//   let instrumentFolder = colorInstrumentMap[color] || 'defaultInstrument';
+
+//   // If the instrument is 'piano', randomly pick 'pianolow' or 'pianohigh'
+//   if (instrumentFolder === 'piano') {
+//     instrumentFolder = Math.random() < 0.5 ? 'pianolow' : 'pianohigh';
+//   }
+
+//   // Set accent volume multiplier (for example, 1.5x the normal volume)
+//   const accentMultiplier = accent ? 1.5 : 1;
+
+//   const sampleNumber = mapNoteToSampleNumber[note];
+//   if (!sampleNumber) {
+//     console.error(`No sample number found for note: ${note}`);
+//     return;
+//   }
+
+//   const sampleFile = `${instrumentFolder}-${sampleNumber}.mp3`;
+//   // const filePath = `/audio/${instrumentFolder}/${sampleFile}`;
+//   const filePath = `${import.meta.env.BASE_URL}audio/${instrumentFolder}/${sampleFile}`;
+//   const audioBuffer = await loadAudioBuffer(filePath);
+
+//   const settings = instrumentSettings[instrumentFolder] || {
+//     attack: 0.1, decay: 0.2, sustain: 0.7, release: 0.3, detuneMin: -0.005, detuneMax: 0.005, baseVolume: 0.5, sustainMultiplier: 100
+//   };
+
+//   const randomAmplitudeVariation = getRandomVariation(0.2, 1);
+
+//   const adjustedVolume = Math.min((1 / Math.sqrt(polyphonyCount)) * settings.baseVolume * randomAmplitudeVariation * accentMultiplier, 1);
+
+//   const source = audioCtx.createBufferSource();
+//   const gainNode = audioCtx.createGain();
+//   const filterNode = audioCtx.createBiquadFilter();
+
+//   const detuneAmount = getRandomVariation(settings.detuneMin, settings.detuneMax);
+//   source.playbackRate.value = 1 + detuneAmount;
+
+//   const baseCutoffFrequency = 11000;
+//   filterNode.type = 'lowpass';
+//   filterNode.frequency.setValueAtTime(baseCutoffFrequency + getRandomVariation(-1000, 1000), audioCtx.currentTime);
+
+//   source.buffer = audioBuffer;
+//   source.connect(filterNode);
+//   filterNode.connect(gainNode);
+//   gainNode.connect(masterGainNode); // Connect each gainNode to the master gain node
+
+//   const attack = settings.attack;
+//   const decay = settings.decay;
+//   const sustainLevel = settings.sustain;
+//   const release = settings.release;
+//   const sustainDuration = (settings.sustainMultiplier / playbackSpeed);
+
+//   const currentTime = audioCtx.currentTime;
+
+//   gainNode.gain.setValueAtTime(0, currentTime);
+//   gainNode.gain.linearRampToValueAtTime(adjustedVolume, currentTime + attack);
+//   gainNode.gain.linearRampToValueAtTime(sustainLevel * adjustedVolume, currentTime + attack + decay);
+//   gainNode.gain.setValueAtTime(sustainLevel * adjustedVolume, currentTime + attack + decay + sustainDuration);
+//   gainNode.gain.linearRampToValueAtTime(0, currentTime + attack + decay + sustainDuration + release);
+
+//   source.start(currentTime);
+//   source.stop(currentTime + attack + decay + sustainDuration + release);
+
+//   // Store the active source, associated with its line
+//   activeSources.push({ source, lineId });
+// };
+
+export const playSound = async (
+  color,
+  note,
+  polyphonyCount = 1,
+  bpm, // Pass bpm directly
+  lineId,
+  colorInstrumentMap,
+  accent = false
+) => {
+  // Calculate playback speed from bpm
+  const playbackSpeed = Math.round(60000 / bpm);
+
   let instrumentFolder = colorInstrumentMap[color] || 'defaultInstrument';
 
   // If the instrument is 'piano', randomly pick 'pianolow' or 'pianohigh'
@@ -147,17 +207,26 @@ export const playSound = async (color, note, polyphonyCount = 1, playbackSpeed, 
   }
 
   const sampleFile = `${instrumentFolder}-${sampleNumber}.mp3`;
-  // const filePath = `/audio/${instrumentFolder}/${sampleFile}`;
   const filePath = `${import.meta.env.BASE_URL}audio/${instrumentFolder}/${sampleFile}`;
   const audioBuffer = await loadAudioBuffer(filePath);
 
   const settings = instrumentSettings[instrumentFolder] || {
-    attack: 0.1, decay: 0.2, sustain: 0.7, release: 0.3, detuneMin: -0.005, detuneMax: 0.005, baseVolume: 0.5, sustainMultiplier: 100
+    attack: 0.1,
+    decay: 0.2,
+    sustain: 0.7,
+    release: 0.3,
+    detuneMin: -0.005,
+    detuneMax: 0.005,
+    baseVolume: 0.5,
+    sustainMultiplier: 100
   };
 
   const randomAmplitudeVariation = getRandomVariation(0.2, 1);
 
-  const adjustedVolume = Math.min((1 / Math.sqrt(polyphonyCount)) * settings.baseVolume * randomAmplitudeVariation * accentMultiplier, 1);
+  const adjustedVolume = Math.min(
+    (1 / Math.sqrt(polyphonyCount)) * settings.baseVolume * randomAmplitudeVariation * accentMultiplier,
+    1
+  );
 
   const source = audioCtx.createBufferSource();
   const gainNode = audioCtx.createGain();
@@ -168,7 +237,10 @@ export const playSound = async (color, note, polyphonyCount = 1, playbackSpeed, 
 
   const baseCutoffFrequency = 11000;
   filterNode.type = 'lowpass';
-  filterNode.frequency.setValueAtTime(baseCutoffFrequency + getRandomVariation(-1000, 1000), audioCtx.currentTime);
+  filterNode.frequency.setValueAtTime(
+    baseCutoffFrequency + getRandomVariation(-1000, 1000),
+    audioCtx.currentTime
+  );
 
   source.buffer = audioBuffer;
   source.connect(filterNode);
@@ -179,15 +251,24 @@ export const playSound = async (color, note, polyphonyCount = 1, playbackSpeed, 
   const decay = settings.decay;
   const sustainLevel = settings.sustain;
   const release = settings.release;
-  const sustainDuration = (settings.sustainMultiplier / playbackSpeed);
+  const sustainDuration = settings.sustainMultiplier / playbackSpeed;
 
   const currentTime = audioCtx.currentTime;
 
   gainNode.gain.setValueAtTime(0, currentTime);
   gainNode.gain.linearRampToValueAtTime(adjustedVolume, currentTime + attack);
-  gainNode.gain.linearRampToValueAtTime(sustainLevel * adjustedVolume, currentTime + attack + decay);
-  gainNode.gain.setValueAtTime(sustainLevel * adjustedVolume, currentTime + attack + decay + sustainDuration);
-  gainNode.gain.linearRampToValueAtTime(0, currentTime + attack + decay + sustainDuration + release);
+  gainNode.gain.linearRampToValueAtTime(
+    sustainLevel * adjustedVolume,
+    currentTime + attack + decay
+  );
+  gainNode.gain.setValueAtTime(
+    sustainLevel * adjustedVolume,
+    currentTime + attack + decay + sustainDuration
+  );
+  gainNode.gain.linearRampToValueAtTime(
+    0,
+    currentTime + attack + decay + sustainDuration + release
+  );
 
   source.start(currentTime);
   source.stop(currentTime + attack + decay + sustainDuration + release);
