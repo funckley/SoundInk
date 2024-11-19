@@ -9,6 +9,7 @@ import { stopSoundsForLine } from './soundPlayer';
 import { v4 as uuidv4 } from 'uuid'; // To generate unique IDs
 import GridCanvas from '../GridComponent/grid';
 import { firstColumn, fistColumnScan, numDotsX, numDotsY, dotRadius } from '../GridComponent/gridConfig';
+import { useMediaQuery } from 'react-responsive';
 
 import PlayIcon from './../../assets/icons/play-svgrepo-com-3.svg';
 import StopIcon from './../../assets/icons/stop-svgrepo-com-3.svg';
@@ -52,16 +53,12 @@ const scaleIcons = {
 };
 
 // Constants for brush colors and sizes
-// const colors = ['#161a1d', '#ffb703', '#fb8500', '#023047', '#219ebc', '#d62828', '#9a031e', '#5f0f40', '#006400', '#8ac926'];
 const colors = ['#161a1d', '#ffb703', '#fb8500', '#023047', '#219ebc', '#9a031e', '#5f0f40', '#006400'];
 
 const sizes = [25, 50];
 const MAX_DELAY = 600; // Maximum delay in milliseconds for the slowest speed
 
 const ERASER_COLOR = '#eae6e1'; // Choose a color that represents the eraser
-// const LOCAL_ERASER_COLOR = '#eae6e1'; // Match this to your background color
-// const colors = ['#161a1d', '#ffb703', '#219ebc', '#9a031e', '#006400', LOCAL_ERASER_COLOR];
-
 // Options for stroke drawing (customizable for smoothness, taper, etc.)
 const options = {
   size: 16,
@@ -88,8 +85,6 @@ const isPointNearDot = (pointX, pointY, dotX, dotY, dotRadius, lineThickness) =>
   return distance <= dotRadius + lineThickness / 2;
 };
 
-
-
 const TlDrawCanvasComponent = () => {
   const { playbackSpeed, setPlaybackSpeed } = usePlaybackSpeed(); // Access playbackSpeed
   const [sonificationPoints, setSonificationPoints] = useState([]); // Points that trigger sounds
@@ -113,6 +108,7 @@ const TlDrawCanvasComponent = () => {
   const [currentScale, setCurrentScale] = useState('harmonicMinor'); // Default scale is harmonic minor
   const [isScaleMenuOpen, setIsScaleMenuOpen] = useState(false); // Toggle for pop-up
 
+
   // Add this at the top of your component, along with other state variables
   const [selectedColor, setSelectedColor] = useState(null); // Track the color for which the modal is shown
   // State to hold instrument assignment for each color
@@ -130,9 +126,8 @@ const TlDrawCanvasComponent = () => {
   });
 
   // Define the available instrument options
-  // const instrumentOptions = ['bass', 'epiano', 'floom', 'guitar', 'marimba', 'pianohigh', 'pianolow', 'strings', 'synthflute'];
-  const instrumentOptions = ['bass', 'epiano', 'floom', 'guitar', 'marimba', 'piano', 'strings', 'synthflute'];
-  // const instrumentOptions = ['bass', 'guitar', 'marimba', 'pianohigh', 'pianolow', 'strings'];
+  // const instrumentOptions = ['bass', 'epiano', 'floom', 'guitar', 'marimba', 'piano', 'strings', 'synthflute'];
+  const instrumentOptions = ['piano', 'marimba', 'bass', 'guitar', 'epiano', 'floom', 'strings', 'synthflute'];
 
   // Inside your component
   const colorInstrumentMapRef = useRef(colorInstrumentMap); // Create a ref for instrument mappings
@@ -140,6 +135,16 @@ const TlDrawCanvasComponent = () => {
   const playbackSpeedRef = useRef(playbackSpeed);
   const playStopButtonRef = useRef(null);
 
+  // Define breakpoints
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1024 });
+  const isDesktop = useMediaQuery({ minWidth: 1025 });
+
+  // Dynamically adjust styles based on the screen size
+  const buttonSize = isMobile ? '40px' : isTablet ? '60px' : '80px';
+  const gapSize = isMobile ? '10px' : isTablet ? '15px' : '20px';
+  const sidebarWidth = isMobile ? '15vw' : '10vw';
+  
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.code === 'Space' && playStopButtonRef.current) {
@@ -556,7 +561,7 @@ const handlePlay = async () => {
 
 return (
   <div className="tldraw-container">
-    <div className="controls">
+    <div  className="controls">
       <div className="color-group">
         {colors.map((color, index) => (
           <div key={index} className="color-instrument-pair">
@@ -667,7 +672,7 @@ return (
       {/* Brush size slider */}
       {/* Playback Speed Slider */}
       <div className="vertical-sliders">
-          <div className="brush-size-group">
+        <div className="brush-size-group">
           <input
             type="range"
             min="1"
@@ -678,7 +683,6 @@ return (
           />
           </div>
           <div className="slider-group">
-          {/* <label htmlFor="bpm">Tempo: {bpm} BPM</label> */}
           <input
             id="bpm"
             type="range"
@@ -694,9 +698,10 @@ return (
               console.log("Current BPM:", bpmValue, "Playback Speed (ms):", playbackSpeedValue);
             }}
           />
-          </div>
+        </div>
       </div>
     </div>
+    
 
     {/* Grid Canvas Component */}
     <GridCanvas showGrid={showGrid} scannedColumn={scannedColumn} intersectedDots={intersectedDots.current} />
