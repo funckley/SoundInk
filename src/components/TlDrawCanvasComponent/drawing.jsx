@@ -110,7 +110,7 @@ const TlDrawCanvasComponent = () => {
   const [scannedColumn, setScannedColumn] = useState(-1);
   const [previousColor, setPreviousColor] = useState(colors[0]);
   // const [bpm, setBpm] = useState(250); // Default BPM is 250
-  const [currentScale, setCurrentScale] = useState('harmonicMinor'); // Default scale is harmonic minor
+  const [currentScale, setCurrentScale] = useState('melodicMinor'); // Default scale is harmonic minor
   const [isScaleMenuOpen, setIsScaleMenuOpen] = useState(false); // Toggle for pop-up
   const { bpm, setBpm } = useBpm(); // Access bpm and setBpm from context
 
@@ -438,6 +438,9 @@ const TlDrawCanvasComponent = () => {
     }
   };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Legacy handlePlay function
+
 // const handlePlay = async () => {
 //   if (isPlaying) return;
 
@@ -459,42 +462,28 @@ const TlDrawCanvasComponent = () => {
 //         const playPromises = [];
 //         for (const row in intersectedDots.current[column]) {
 //           const { color } = intersectedDots.current[column][row];
-
-//           // Check for descending logic only for melodicMinor
-//           let mapRowToNote;
-//           if (currentScale === "melodicMinor") {
-//             const nextColumn = intersectedDots.current[column + 1];
-
-//             // Determine if the next column has a triggered note in the row below the current one
-//             const isRowBelowTriggered =
-//               nextColumn && nextColumn[Number(row) + 1] !== undefined;
-
-//             const direction = isRowBelowTriggered ? "descending" : "ascending";
-//             mapRowToNote = getScaleForDirection(direction); // Get the appropriate scale
-//           } else {
-//             mapRowToNote = scales[currentScale]; // Use the selected scale directly
-//           }
-
+//           // const note = mapRowToNote[row];
+//           const mapRowToNote = getMapRowToNote();
 //           const note = mapRowToNote[row];
-//           if (note) {
-//             playPromises.push(
-//               playSound(
-//                 color,
-//                 note,
-//                 1,
-//                 bpm,
-//                 intersectedDots.current[column][row].lineId,
-//                 colorInstrumentMapRef.current,
-//                 isAccentColumn
-//               )
-//             );
-//           }
+
+//           // Reference the updated colorInstrumentMap for each sound
+//           playPromises.push(
+//             playSound(
+//               color,
+//               note,
+//               1,
+//               playbackSpeedRef.current, // Use the updated playbackSpeedRef
+//               intersectedDots.current[column][row].lineId,
+//               colorInstrumentMapRef.current,
+//               isAccentColumn
+//             )
+//           );
 //         }
 //         await Promise.all(playPromises);
 //       }
 
 //       // Dynamically adjust tempo using `playbackSpeedRef.current`
-//       await new Promise((resolve) =>
+//       await new Promise(resolve =>
 //         setTimeout(resolve, playbackSpeedRef.current)
 //       );
 //     }
@@ -504,6 +493,9 @@ const TlDrawCanvasComponent = () => {
 //   setScannedColumn(-1);
 //   setIsPlaying(false);
 // };
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Check if rows 0, 7, 14 are triggered in the next 3 columns
 const isRowTriggeredInNextColumns = (currentColumn, intersectedDots, range = 3) => {
@@ -533,6 +525,31 @@ const areRowsNotTriggeredInNextColumns = (currentColumn, intersectedDots, range 
   }
   return true; // None of the target rows are triggered
 };
+
+// Check if rows 0, 7, 14 are triggered in the previous 3 columns
+const isRowTriggeredInPreviousColumns = (currentColumn, intersectedDots, range = 3) => {
+  const targetRows = [0, 7, 14]; // The specific rows to check
+  for (let prevCol = currentColumn - 1; prevCol >= currentColumn - range; prevCol--) {
+    if (intersectedDots[prevCol]) {
+      for (const row of targetRows) {
+        if (intersectedDots[prevCol][row]) {
+          return true; // A target row is triggered in the previous 3 columns
+        }
+      }
+    }
+  }
+  return false; // None of the target rows are triggered
+};
+
+const isChordInCurrentColumn = (currentColumn, intersectedDots, chordThreshold = 3) => {
+  if (!intersectedDots[currentColumn]) return false; // No notes in the current column
+
+  const triggeredRows = Object.keys(intersectedDots[currentColumn]).length;
+  return triggeredRows >= chordThreshold; // Returns true if the number of triggered rows meets or exceeds the threshold
+};
+
+// Function to detect chords in a column
+// `numNotes` is the number of notes required to consider it a chord
 
 const handlePlay = async () => {
   if (isPlaying) return;
@@ -575,12 +592,28 @@ const handlePlay = async () => {
             }
 
             // Determine scale based on descending length
-            if ((descendingSteps > 2) && !(isRowTriggeredInNextColumns(column, intersectedDots.current))) {
+            // isChordInCurrentColumn = (currentColumn, intersectedDots, chordThreshold = 3)
+            if (isChordInCurrentColumn(column, intersectedDots.current, 3)) {
+              direction = "tension";
+              console.log("chord");
+            } else if ((descendingSteps > 2) && !(isRowTriggeredInNextColumns(column, intersectedDots.current))) {
               direction = "descending";
+              // console.log("this");
             } else if ((descendingSteps > 2) && (areRowsNotTriggeredInNextColumns(column, intersectedDots.current, 1))) {
               direction = "descending";
+              // console.log("this");
+            } else if (isRowTriggeredInNextColumns(column, intersectedDots.current, 1) && isRowTriggeredInPreviousColumns(column, intersectedDots.current, 2)) {
+              direction = "ascending";
+              // console.log("this");
+            } else if (isRowTriggeredInNextColumns(column, intersectedDots.current, 1)) {
+              direction = "ascending";
+              // console.log("this");
+            } else if (isRowTriggeredInPreviousColumns(column, intersectedDots.current, 2) && areRowsNotTriggeredInNextColumns(column, intersectedDots.current, 1)) {
+              direction = "ascending";
+              // console.log("this");
             } else if (areRowsNotTriggeredInNextColumns(column, intersectedDots.current, 1)) {
               direction = "descending";
+              console.log("this");
             }
 
             mapRowToNote = getScaleForDirection(direction);
