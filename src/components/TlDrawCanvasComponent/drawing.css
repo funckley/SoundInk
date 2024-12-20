@@ -1,15 +1,11 @@
-.tldraw-container {
-  user-select: none;
-}
-
-/* Main container style */
-.tldraw-container {
+/* Parent container layout */
+.main-container {
   display: flex;
-  position: relative;
+  flex-direction: row;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: #eae6e1;
+  user-select: none;
 }
 
 /* Controls sidebar styling */
@@ -21,23 +17,20 @@
   overflow-y: hidden;
   margin-top: 0px;
   margin-left: 10px;
-  /* height: 100vh; */
-  /* max-height: 100%; */
   height: 96%;
-  /* width: 12vw; */
-  /* width: 6vw; */
-  /* max-width: 6vw; */
   max-width: 100px;
   padding: 20px 10px;
-  background: linear-gradient(90deg, #6c8654 0%, #6c8654 100%);
+  background: linear-gradient(90deg, #4e76bb 0%, #4e76bb 100%);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
   overflow-y: auto;
-  border: 2px solid #333;
+  border: 2px solid #4e76bb;
+  z-index: 1;
 }
+
 /* 4e76bb blue */
 /* 6c8654 green */
 
@@ -47,6 +40,18 @@
     max-width: 85px;
     max-height: 700px;
   }
+}
+
+/* Main container style */
+.tldraw-container {
+  flex-grow: 1;
+  display: flex;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #eae6e1;
+  z-index: 1;
 }
 
 /* Color button grid styling */
@@ -73,7 +78,7 @@ button {
   padding: 0px;
   overflow: hidden;
   font-family: 'Arial', sans-serif;
-  font-weight: bold;
+  /* font-weight: bold; */
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1.8em;
@@ -84,8 +89,8 @@ button {
   width: 100% !important;
   height: 100% !important;
   aspect-ratio: 1 / 1;
-  border: 2px solid #333 !important;
-  border-radius: 50% !important;
+  /* border: 2px solid #333 !important; */
+  border-radius: 30% !important;
   border-style: solid;
   /* Change to dashed, dotted, etc., if needed */
   cursor: pointer;
@@ -95,6 +100,19 @@ button {
 .color-button:hover {
   transform: scale(1.05);
 }
+
+
+.color-button.active {
+  /* border: 4px solid #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7); */
+  /* border: 1px solid #ffe2d6; */
+  box-shadow: 
+    0 0 5px #ffe2d6,
+    0 0 3px #ffc400,
+    0 0 5px #ffc400,
+    0 0 7px #ffc400;
+}
+
 
 .instrument-select-button {
   width: 100% !important;
@@ -128,8 +146,10 @@ button {
 
 .eraser-container,
 .steps-group,
-.play-controls-group,
-.grid-loop-group,
+.loop-scale-group,
+.grid-group,
+.save-load-buttons,
+.play-group,
 .scale-container {
   display: flex;
   /* Arrange buttons horizontally */
@@ -147,6 +167,25 @@ button {
   /* Adjust spacing above the group */
 }
 
+@media (max-height: 800px) {
+  
+}
+
+.grid-group {
+  margin-top: 13px;
+  margin-bottom: 0px;
+}
+
+.play-group {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.loop-scale-group {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
 .color-button,
 .instrument-select-button,
 .eraser-button,
@@ -156,18 +195,21 @@ button {
 .play-stop-button,
 .grid-button,
 .loop-button,
+.save-button,
+.load-button,
 .scale-button {
   width: 10vw;
   /* height: 0%; */
   padding: 0px;
   margin: 0 auto;
-  border: 2px solid #333;
-  border-radius: 50%;
+  border: 2px solid #33368f;
+  /* border: None; */
+  border-radius: 30%;
   font-size: 1.8em;
   cursor: pointer;
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   transition: transform 0.2s, background-color 0.2s;
-  background-color: #9e273e;
+  background-color: #33368f;
   text-align: center;
   box-shadow: none;
   /* transition: border-color 0.5s ease-out, box-shadow 0.5s ease-out; */
@@ -176,6 +218,8 @@ button {
     border-color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), /* Quick ease-in */
     box-shadow 0.6s cubic-bezier(0.42, 0, 0.58, 1); /* Smooth ease-out for shadow */
 }
+
+/* 33368f blue-ish */
 /* 9e273e red */
 /* 891515 dark red */
 /* b42d1a light red */
@@ -191,9 +235,10 @@ button {
   align-items: center;
 } */
 
+
 .eraser-button.active, .trash-button.active
  {
-  border: 1px solid #ffe2d6;
+  /* border: 1px solid #ffe2d6; */
   box-shadow: 
     0 0 5px #ffe2d6,
     0 0 3px #ffc400,
@@ -208,11 +253,13 @@ button {
 .loop-button:hover,
 .grid-button:hover,
 .stop-mode:hover,
+.save-button:hover,
+.load-button:hover,
 .scale-button:hover {
   transform: scale(1.05);
-  background-color: #9e273e;
+  background-color: #1e2168;
 }
-
+/* 9e273e */
 .stop-mode {
   /* background-color: #b72929; */
   border: 1px solid #ffe2d6;
@@ -223,15 +270,8 @@ button {
     0 0 7px #ffc400;
 }
 
-.loop-button.active {
-  /* background-color: #d95420; */
-  background-color: #671223; /* Dark background for contrast */
-  border: 1px solid #ffe2d6;
-  box-shadow: 
-    0 0 5px #ffe2d6,
-    0 0 3px #ffc400,
-    0 0 5px #ffc400,
-    0 0 7px #ffc400;
+.grid-button {
+  width: 2.9vw;
 }
 
 .grid-button:active,
@@ -240,6 +280,8 @@ button {
 .play-stop-button:active,
 .undo:active,
 .redo:active,
+.save-button:active,
+.load-button:active,
 .eraser-button:active,
 .trash-button:active {
   border: 1px solid #ffe2d6;
@@ -250,6 +292,57 @@ button {
     0 0 7px #ffc400;
 }
 
+@media (max-height: 800px) {
+  .eraser-container,
+  .steps-group,
+  .loop-scale-group,
+  .grid-group,
+  .save-load-buttons,
+  .play-group,
+  .scale-container {
+    display: flex;
+    /* Arrange buttons horizontally */
+    gap: 0.5vw;
+    /* Space between the Grid and Loop buttons */
+    width: 100%;
+    /* Adjust width as needed */
+    height: 3em;
+    max-height: 1.7em;
+    justify-content: center;
+    /* Center align the buttons */
+    align-items: center;
+    /* margin-bottom: 10px; */
+    margin-top: 10px;
+    /* Adjust spacing above the group */
+  }
+
+  .play-group {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+
+  .play-stop-button {
+    width: 4vw;
+  }
+
+  .loop-scale-group {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+}
+
+.play-stop-button {
+  background-color: #12890e;
+}
+
+.stop-mode {
+  background-color: #9c1825 !important;
+}
+
+.play-stop-button:hover {
+  background-color: #056601;
+}
+
 /* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 /* Instrument selection modal styling */
@@ -258,8 +351,8 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #4e76bb;
-  border: 2px solid #333;
+  background-color: #33368f;
+  /* border: 2px solid #333; */
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -283,17 +376,16 @@ button {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  
 }
 
 .instrument-option-button {
-  width: 120px;
+  width: 80px;
   /* Adjust button size */
-  height: 120px;
+  height: 80px;
   /* Adjust button size */
   background-color: #901e29;
-  border: 2px solid #333;
-  border-radius: 50%;
+  border: 2px solid #901e29;
+  border-radius: 30%;
   /* border-radius: 20%; */
   cursor: pointer;
   transition: background-color 0.2s;
@@ -325,7 +417,7 @@ button {
   background-color: #9e2424;
   color: white;
   border-radius: 15%;
-  border: 2px solid #631616;
+  border: None;
   /* border-color: #310e15 !important; */
   cursor: pointer;
 }
@@ -334,18 +426,43 @@ button {
   background-color: #c32b2b;
 }
 
+.instrument-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 20px; /* Space between rows and columns */
+  justify-content: center; /* Center align the grid */
+  align-items: center; /* Align items vertically */
+}
+
+.instrument-option-cell {
+  display: flex;
+  flex-direction: column; /* Stack button and label */
+  align-items: center; /* Center align items */
+  gap: 5px; /* Space between button and label */
+}
+
+.instrument-label {
+  font-size: 0.9em;
+  color: #ffd500; /* Match the theme color */
+  text-align: center;
+  /* font-weight: bold; */
+}
+
 /* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .iconPlay,
 .iconDo,
 .iconStop,
 .iconLoop,
+.noLoop,
 .iconGrid,
 .iconTempo,
 .iconEraser,
 .iconTrash,
 .iconInstrument,
 .scale-option-icon,
+.iconDown,
+.iconUp,
 .iconQuit,
 .scale-icon{
   width: auto;
@@ -380,12 +497,16 @@ button {
   transform: scale(0.7);
 }
 
-.iconLoop {
+.iconLoop, .noLoop {
   transform: scale(0.9);
 }
 
 .scale-option-icon {
   transform: scale(1);
+}
+
+.iconDown, .iconUp {
+  transform: scale(0.75);
 }
 
 button:hover .iconStop, button.active .iconStop, .iconStop,
@@ -395,6 +516,7 @@ button:hover .iconQuit,
 button:hover .iconEraser, button.active .iconEraser,
 button:hover .iconTrash, button.active .iconTrash,
 button:hover .iconLoop, button.active .iconLoop,
+button:hover .noLoop, button.active .noLoop,
 button:hover .scale-icon, button:hover .scale-option-icon {
   stroke: #ffd500;
   stroke-width: 2px;
@@ -468,7 +590,8 @@ button:hover .instrument-sidebar-icon {
   gap: 0px;
   width: 100%;
   max-height: 50%;
-  margin-top: 6vh;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
   justify-content: center;
 }
 
@@ -483,12 +606,12 @@ button:hover .instrument-sidebar-icon {
   width: 10em !important;
   height: 40px;
   max-width: 10em;
-  background: #9e273e;
-  border-radius: 15px;
+  background: #33368f;
+  border-radius: 11px;
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
-  border: 2px solid #333;
+  /* border: 2px solid #333; */
 }
 
 .brush-size-group input[type="range"] {
@@ -497,12 +620,12 @@ button:hover .instrument-sidebar-icon {
   width: 128px !important;
   height: 40px;
   max-width: 10em;
-  background: #9e273e;
-  border-radius: 15px;
+  background: #33368f;
+  border-radius: 11px;
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
-  border: 2px solid #333;
+  /* border: 2px solid #333; */
 }
 
 @media (max-height: 800px) {
@@ -510,12 +633,14 @@ button:hover .instrument-sidebar-icon {
     width: 8em !important;
     height: 40px;
     max-width: 8em;
+    margin-top: 0vh;
   }
 
   .brush-size-group input[type="range"] {
     width: 8em !important;
     height: 40px;
     max-width: 8em;
+    margin-top: 0vh;
   }
 }
 
@@ -533,10 +658,8 @@ button:hover .instrument-sidebar-icon {
   border: 1px solid #ffe2d6;
   box-shadow: 
     0 0 5px #ffe2d6,
-    0 0 3px #ffc400,
-    0 0 5px #ffc400,
-    0 0 7px #ffe2d6;
-  border-radius: 50%;
+    0 0 3px #ffc400;
+  border-radius: 25%;
   cursor: pointer;
   transform: rotate(90deg);
   transition: background-color 0.3s;
@@ -558,14 +681,12 @@ button:hover .instrument-sidebar-icon {
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
-  border: 2px solid #310e15;
+  /* border: 2px solid #310e15; */
   border: 1px solid #ffe2d6;
   box-shadow: 
     0 0 5px #ffe2d6,
-    0 0 3px #ffc400,
-    0 0 5px #ffc400,
-    0 0 7px #ffe2d6;
-  border-radius: 50%;
+    0 0 3px #ffc400;
+  border-radius: 25%;
   cursor: pointer;
   transform: rotate(90deg);
   transition: background-color 0.3s;
@@ -776,8 +897,8 @@ button:hover .instrument-sidebar-icon {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #4e76bb;
-  border: 2px solid #333;
+  background-color: #33368f;
+  border: 2px solid #33368f;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -799,8 +920,8 @@ button:hover .instrument-sidebar-icon {
 .scale-option-button {
   background: transparent;
   background-color: #891515;
-  border: 2px solid #333;
-  border-radius: 50%;
+  border: 2px solid #891515;
+  border-radius: 30%;
   padding: 10px;
   cursor: pointer;
   transition: 
@@ -817,4 +938,185 @@ button:hover .instrument-sidebar-icon {
 .scale-option-icon {
   width: 40px;
   height: 40px;
+}
+
+.instrument-options-vertical,
+.scale-options-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between rows */
+  align-items: flex-start; /* Align items to the left */
+}
+
+.instrument-option-row,
+.scale-option-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px; /* Space between button and label */
+}
+
+.instrument-label,
+.scale-label {
+  font-size: 1em;
+  color: #ffd500; /* Adjust color to fit the theme */
+  /* font-weight: bold; */
+  text-shadow: 
+    0 0 10px #ffe2d6,
+    0 0 1px #ffc400;
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+
+/* Overlay for the loading pop-up */
+.loading-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it’s on top of other elements */
+}
+
+/* Content inside the loading pop-up */
+.loading-content {
+  text-align: center;
+  background: #33368f;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  font-family: Arial, sans-serif;
+  color: #ffc400;
+}
+
+/* Loading spinner (simple animation) */
+.loading-spinner {
+  margin: 1rem auto;
+  width: 40px;
+  height: 40px;
+  border: 5px solid #ffe2d6;
+  border-top-color: #ffc400;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+.instrument-selection-modal {
+  position: relative;
+  max-height: 70%; /* Restrict the height */
+  overflow-y: auto; /* Add scroll if content overflows */
+  padding: 40px;
+  border-radius: 25px;
+  background-color: #33368f;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Roboto', sans-serif; /* Apply font */
+}
+
+.instrument-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 20px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 50px;
+}
+
+.instrument-option-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.close-modal-button {
+  position: absolute;
+  top: -30px;
+  left: 10px;
+  width: 50px;
+  height: 50px;
+  background-color: #9e2424;
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal-button:hover {
+  background-color: #c32b2b;
+}
+
+.instrument-label {
+  font-size: 14px;
+  /* font-weight: bold; */
+  margin-top: 8px;
+  color: #ffc400;
+  text-align: center;
+}
+
+/* General Scale Selection Modal Styling */
+.scale-selection-modal {
+  position: relative;
+  max-height: 50%; /* Restrict the height */
+  overflow-y: auto; /* Enable scrolling if necessary */
+  padding: 40px;
+  border-radius: 25px;
+  background-color: #33368f;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Roboto', sans-serif; /* Apply font */
+}
+
+/* Grid for Scale Options */
+.scale-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns for alignment */
+  gap: 20px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 50px;
+}
+
+/* Individual Scale Option Cell */
+.scale-option-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Label Under Each Scale Option */
+.scale-label {
+  font-size: 14px;
+  /* font-weight: bold; */
+  margin-top: 8px;
+  color: #ffc400;
+  text-align: center;
 }
