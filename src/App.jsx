@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar/sidebar';
-import TlDrawCanvasComponent from './components/TlDrawCanvasComponent/drawing';
-import GridCanvas from './components/GridComponent/grid';
-import { PlaybackSpeedProvider } from './components/TlDrawCanvasComponent/playbackSpeedContext'; // Import the provider
+import CanvasComponent from './components/CanvasComponent/interface';
+import { PlaybackSpeedProvider } from './components/CanvasComponent/playbackSpeedContext'; // Import the provider
 import './App.css';
-import { preloadSounds } from './components/TlDrawCanvasComponent/soundPlayer';
-import { BpmProvider } from './components/TlDrawCanvasComponent/bpmContext';
+import { preloadSounds } from './components/CanvasComponent/soundPlayer';
+import { BpmProvider } from './components/CanvasComponent/bpmContext';
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -24,11 +22,19 @@ function App() {
     loadSounds(); // Call the function
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
+  // Lock the screen to prevent scrolling
+  useEffect(() => {
+    document.body.classList.add('lock-scroll');
+    return () => {
+      document.body.classList.remove('lock-scroll');
+    };
+  }, []);
+
   return (
     <PlaybackSpeedProvider> {/* Wrap your app with PlaybackSpeedProvider */}
       <BpmProvider>
         <div className="app-container">
-          <TlDrawCanvasComponent brushSize={brushSize} />
+          <CanvasComponent brushSize={brushSize} />
         </div>
       </BpmProvider>
     </PlaybackSpeedProvider>

@@ -1,12 +1,13 @@
-body, * {
-  user-select: none;
-}
-
 /* The main app container, taking full viewport height */
 .App {
   position: relative;
   width: 100%;
   height: 100vh;
+}
+
+/* Lock the screen to prevent scrolling */
+body.lock-scroll {
+  overflow: hidden;
 }
 
 /* Grid canvas is overlaid behind other elements, 
@@ -66,15 +67,4 @@ body, * {
   justify-content: center;
   font-size: 16px;
   color: white;
-}
-
-/* /////////////////////////////////////////////////////////////////////??///////////////// */
-
-* {
-  -webkit-user-drag: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
