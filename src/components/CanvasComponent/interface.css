@@ -13,6 +13,7 @@
 
 :root {
   --canvasColor: #eae6e1;
+  --editmodeColor: #b7aea2;
   --sideBarColor: #4d9cae; 
   --buttonColor: #b64545;
   --buttonHoverColor: #bf5050;
@@ -22,6 +23,7 @@
   --menuButtonColor: #4d9cae;
   --menuColor: #96B378;
   --menuTextColor: #2E2E2E;
+  --settingButtonColor: #1f57b8;
 }
 
 html, body {
@@ -80,7 +82,7 @@ html, body {
 
 /* Main container style */
 .canvas-container {
-  display: flex;
+  display: flex;  
   flex-direction: column;
   position: relative;
   height: 100vh;
@@ -91,6 +93,15 @@ html, body {
   z-index: 1;
 }
 
+/* interface.css */
+.canvas-container {
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+/* .canvas-container.edit-mode-active {
+  background-color: #ff0000;
+} */
+
 /* SVG Drawing Area */
 .canvas-container svg {
   width: 100%;
@@ -100,9 +111,11 @@ html, body {
 
 /* Color button grid styling */
 .color-group {
-  /* display: flex; */
-  display: grid;
-  grid-template-columns: repeat(1, 2fr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* display: grid; */
+  grid-template-columns: repeat(1, 3fr);
   gap: 1vh;
   width: 100%;
   justify-content: center;
@@ -130,37 +143,49 @@ button {
 }
 
 .color-button {
-  width: 100% !important;
-  height: 100% !important;
+  /* width: 100% !important;
+  height: 100% !important; */
+  background-color: var(--menuTextColor);
+  width: 75px !important;
+  height: 75px !important;
   aspect-ratio: 1 / 1;
   border-radius: 30% !important;
+  /* border: 2px solid var(--buttonColor); */
+  /* border: 7px solid !important; */
   border-style: solid;
-  /* Change to dashed, dotted, etc., if needed */
   cursor: pointer;
-  transition: transform 0.2s;
+  /* transition: transform 0.2s; */
+  transition: transform 0.2s, border-color 0.2s !important;
   transform: scale(1);
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 
 .color-button:hover {
   transform: scale(1.05);
 }
 
-
 .color-button.active {
   box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor),
-    0 0 5px var(--shadowColor),
-    0 0 7px var(--shadowColor);
+    0 0 7px var(--shadowBorder),
+    0 0 7px var(--shadowColor),
+    0 0 9px var(--shadowColor),
+    0 0 13px var(--shadowColor);
 }
 
-
 .instrument-select-button {
-  width: 100% !important;
-  height: 100% !important;
-  background-color: #704f4a;
+  /* width: 50% !important;
+  height: 50% !important; */
+  width: 30px !important;
+  height: 30px !important;
+  background-color: var(--settingButtonColor) !important;
+  border-color: var(--menuColor) !important;
   transition: transform 0.2s;
   transform: scale(1);
+  position: absolute;
+  top: -10%;
+  left: 70%;
 }
 
 .instrument-select-button:hover {
@@ -170,12 +195,13 @@ button {
 /* Container for each color-instrument pair */
 .color-instrument-pair {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  position: relative;
   /* gap: 10px; */
   gap: 0.5vw;
   width: 100%;
-  justify-content: center;
 }
 
 
@@ -212,6 +238,11 @@ button {
   /* Adjust spacing above the group */
 }
 
+.edit-container {
+  margin-top: 0vh;
+  margin-bottom: 10px !important;
+}
+
 @media (max-height: 800px) {
   
 }
@@ -222,25 +253,25 @@ button {
 } */
 
 .play-group {
-  margin-top: 20px;
-  margin-bottom: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .loop-scale-group {
   margin-top: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 
-.color-button,
+/* .color-button, */
 .instrument-select-button,
 .eraser-button,
 .trash-button,
 .undo,
 .redo,
 .grid-button,
+.clean-button,
 .settings-button,
 .edit-button,
-.clean-button,
 .loop-button,
 .save-button,
 .load-button,
@@ -268,11 +299,10 @@ button {
 
 .edit-button {
   margin-top: 10px;
-  width: 4vw;
-  height: 5vh;
-  border-radius: 20%;
+  width: 55px;
+  height: 55px;
+  border-radius: 30%;
 }
-
 
 /* 33368f blue-ish */
 /* 9e273e red */
@@ -311,9 +341,9 @@ button {
 .play-stop-button:hover,
 .loop-button:hover,
 .grid-button:hover,
+.clean-button:hover,
 .settings-button:hover,
 .edit-button:hover,
-.clean-button:hover,
 .stop-mode:hover,
 .scale-button:hover {
   transform: scale(1.05);
@@ -332,10 +362,9 @@ button {
 
 
 .grid-button:active,
+.clean-button:active,
 .settings-button:active,
 .edit-button:active,
-.clean-button:active,
-.clean-button:active,
 .scale-button:active,
 .loop-button:active,
 .play-stop-button:active,
@@ -385,7 +414,7 @@ button {
 
 .play-stop-button {
   margin-top: 0px;
-  width: 80px;
+  width: 75px;
   /* height: 0%; */
   padding: 0px;
   margin: 0 auto;
@@ -578,8 +607,12 @@ button {
   transform: scale(0.7);
   stroke: var(--shadowColor);
   stroke-width: 2px;
-  filter: drop-shadow(0 0 1px var(--shadowColor)) drop-shadow(0 0 2px var(--shadowColor));
+  filter: drop-shadow(0 0 0px var(--shadowColor)) drop-shadow(0 0 1px var(--shadowColor));
   animation: inner-glow 2s infinite alternate;
+}
+
+.iconEdit {
+  transform: scale(0.5);
 }
 
 .iconGrid {
@@ -624,13 +657,13 @@ button:hover .noLoop, button.active .noLoop,
 button:hover .scale-icon, button:hover .scale-option-icon {
   stroke: var(--shadowColor);
   stroke-width: 2px;
-  filter: drop-shadow(0 0 1px var(--shadowColor)) drop-shadow(0 0 3px var(--shadowColor)) drop-shadow(0 0 5px var(--shadowColor));
+  filter: drop-shadow(0 0 1px var(--shadowColor)) drop-shadow(0 0 1px var(--shadowColor)) drop-shadow(0 0 2px var(--shadowColor));
 }
 
 button.active .iconPlay, button:hover .iconPlay {
   stroke: var(--shadowColor);
   stroke-width: 2px;
-  filter: drop-shadow(0 0 3px var(--shadowColor)) drop-shadow(0 0 5px var(--shadowColor)) drop-shadow(0 0 5px var(--shadowColor));
+  filter: drop-shadow(0 0 1px var(--shadowColor)) drop-shadow(0 0 1px var(--shadowColor)) drop-shadow(0 0 2px var(--shadowColor));
 }
 
 .instrument-icon {
@@ -700,7 +733,7 @@ button:hover .instrument-sidebar-icon {
   stroke: var(--shadowColor);
   stroke-width: 2px;
   /* filter: drop-shadow(0 0 1px var(--menuTextColor)) drop-shadow(0 0 1px var(--menuTextColor)); */
-  filter: drop-shadow(0 0 2px var(--shadowColor));
+  filter: drop-shadow(0 0 1px var(--shadowColor));
 }
 
 /* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -711,7 +744,7 @@ button:hover .instrument-sidebar-icon {
   justify-content: center;
   width: 50%;
   margin-bottom: 0vh;
-  margin-top: 5vh;
+  margin-top: 4.5vh;
 }
 
 .vertical-sliders-2 {
@@ -1050,8 +1083,8 @@ button:hover .instrument-sidebar-icon {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--buttonColor);
-  border: 2px solid var(--buttonColor);
+  background-color: var(--menuColor);
+  border: 2px solid var(--menuColor);
   padding: 40px;
   border-radius: 25px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -1103,8 +1136,8 @@ button:hover .instrument-sidebar-icon {
 
 .scale-option-button {
   background: transparent;
-  background-color: #891515;
-  border: 2px solid #891515;
+  background-color: var(--menuButtonColor);
+  border: 2px solid var(--menuButtonColor);
   border-radius: 30%;
   padding: 10px;
   cursor: pointer;
@@ -1146,9 +1179,9 @@ button:hover .instrument-sidebar-icon {
   font-size: 1em;
   color: var(--menuTextColor); /* Adjust color to fit the theme */
   /* font-weight: bold; */
-  text-shadow: 
-    0 0 10px var(--shadowBorder),
-    0 0 1px var(--shadowColor);
+  /* text-shadow:  */
+    /* 0 0 10px var(--shadowBorder), */
+    /* 0 0 1px var(--shadowColor); */
 }
 
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -1484,34 +1517,6 @@ button:hover .instrument-sidebar-icon {
   flex-direction: row;
   gap: 15px;
   justify-content: center;
-}
-
-.clean-button {
-  width: 80px;
-  /* Adjust button size */
-  height: 80px;
-  /* Adjust button size */
-  background-color: var(--menuButtonColor);
-  border: 2px solid var(--menuButtonColor);
-  border-radius: 30%;
-  /* border-radius: 20%; */
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 
-    transform 0.3s cubic-bezier(0.42, 0, 0.58, 1), /* Smooth scale transition */
-    border-color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), /* Quick ease-in */
-    box-shadow 0.6s cubic-bezier(0.42, 0, 0.58, 1); /* Smooth ease-out for shadow */
-}
-
-.clean-button:active {
-  background-color: var(--menuButtonColor);
-}
-
-.clean-button:hover {
-  background-color: var(--menuButtonColor);
 }
 
 .settings-option-button:hover {

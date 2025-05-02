@@ -57,6 +57,16 @@ const CanvasComponent = () => {
   const [isEditMode, setIsEditMode] = useState(false); // Tracks if Edit Mode is active
   const [selectedLine, setSelectedLine] = useState(null); // Tracks the line being edited
 
+  const [isDragging, setIsDragging] = useState(false); // Tracks if a line is being dragged
+  const [draggedLine, setDraggedLine] = useState(null); // Tracks the line being dragged
+  const [dragOffset, setDragOffset] = useState([0, 0]); // Tracks the offset between the pointer and the line
+  const [originalLinePoints, setOriginalLinePoints] = useState(null); // Store the original points of the dragged line
+  const [initialDragPoint, setInitialDragPoint] = useState(null); // Store the initial cursor position
+  const [intersectedDotsState, setIntersectedDotsState] = useState({});
+  const [wasDragged, setWasDragged] = useState(false); // Tracks if the pointer was dragged
+  const clickPointRef = useRef(null); // Temporary global variable for clickPoint
+
+
   // State to hold instrument assignment for each color
   const [colorInstrumentMap, setColorInstrumentMap] = useState({
     color1: 'piano',
@@ -69,8 +79,8 @@ const CanvasComponent = () => {
 
   // Add a new state to manage the colors for each slot
   const [colorSlots, setColorSlots] = useState({
-    color1: '#e10134',
-    color2: '#2c53bf',
+    color1: '#a9103a',
+    color2: '#043293',
     color3: '#fead36',
     eraser: '#eae6e0'
   });
@@ -117,109 +127,10 @@ const CanvasComponent = () => {
     idInstrumentMapRef.current = idInstrumentMap; // Keep the ref in sync with the state
   }, [idInstrumentMap]);
 
-  // Save state to localStorage whenever it changes
-  useEffect(() => {
-    const stateToSave = {
-      lines,
-      sonificationPoints,
-      colorInstrumentMap,
-      idInstrumentMap, // Include idInstrumentMap
-      currentColor,
-      currentSize,
-      isEraser,
-      isTrash,
-      undoStack,
-      redoStack,
-      showGrid,
-      loop,
-      bpm,
-      playbackSpeed,
-      currentScale,
-    };
-    // console.log('Saving state to localStorage:', stateToSave);
-    localStorage.setItem('soundinkState', JSON.stringify(stateToSave));
-  }, [
-    lines,
-    sonificationPoints,
-    colorInstrumentMap,
-    idInstrumentMap, // Include idInstrumentMap
-    currentColor,
-    currentSize,
-    isEraser,
-    isTrash,
-    undoStack,
-    redoStack,
-    showGrid,
-    loop,
-    bpm,
-    playbackSpeed,
-    currentScale,
-  ]);
-
   useEffect(() => {
     gridConfigRef.current = gridConfig; // Update the ref whenever gridConfig changes
   }, [gridConfig]);
 
-
-  // Load state from localStorage when the component mounts
-  useEffect(() => {
-    const savedState = localStorage.getItem('soundinkState');
-    if (savedState) {
-      const {
-        lines,
-        sonificationPoints,
-        colorInstrumentMap,
-        idInstrumentMap, // Include idInstrumentMap
-        currentColor,
-        currentSize,
-        isEraser,
-        isTrash,
-        undoStack,
-        redoStack,
-        showGrid,
-        loop,
-        bpm,
-        playbackSpeed,
-        currentScale,
-      } = JSON.parse(savedState);
-
-      // console.log('Loading state from localStorage:', savedState);
-
-      setLines(lines);
-      setSonificationPoints(sonificationPoints);
-      setColorInstrumentMap(colorInstrumentMap);
-      setIdInstrumentMap(idInstrumentMap); // Set the loaded idInstrumentMap
-      setCurrentColor(currentColor);
-      setCurrentSize(currentSize);
-      setIsEraser(isEraser);
-      setIsTrash(isTrash);
-      setUndoStack(undoStack);
-      setRedoStack(redoStack);
-      setShowGrid(showGrid);
-      setLoop(loop);
-      setBpm(bpm);
-      setPlaybackSpeed(playbackSpeed);
-      setCurrentScale(currentScale);
-
-      // Rebuild intersectedDots to link sonification points for playback
-      const updatedIntersectedDots = {};
-      lines.forEach((line) => {
-        if (line.intersections) {
-          Object.entries(line.intersections).forEach(([column, rows]) => {
-            if (!updatedIntersectedDots[column]) updatedIntersectedDots[column] = {};
-            Object.entries(rows).forEach(([row, intersectionData]) => {
-              updatedIntersectedDots[column][row] = intersectionData;
-            });
-          });
-        }
-      });
-
-      // Update the intersectedDots reference
-      intersectedDots.current = updatedIntersectedDots;
-
-      // console.log('State loaded and intersectedDots rebuilt:', updatedIntersectedDots);
-    }
-  }, []);
 
   // Function to check if a dot intersects with the stroke outline
   const isDotIntersected = (dotX, dotY, strokeOutline) => {
@@ -713,6 +624,16 @@ const CanvasComponent = () => {
   }, [selectedColor]);
 
   useEffect(() => {
+    const root = document.documentElement;
+  
+    if (isEditMode) {
+      root.style.setProperty('--canvasColor', '#b7aea2'); // Light gray for Edit Mode
+    } else {
+      root.style.setProperty('--canvasColor', '#eae6e1'); // Default canvas color
+    }
+  }, [isEditMode]);
+
+  useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.code === 'Space' && playStopButtonRef.current) {
         event.preventDefault(); // Prevent default scrolling or other space-related actions
@@ -764,23 +685,9 @@ const CanvasComponent = () => {
     setIsScaleMenuOpen(false); // Close the menu
   };
 
-  // Function to open the instrument selection menu for a specific color
-  // const openInstrumentMenu = (color) => {
-  //   setSelectedColor(color); // Set the color for which the menu should be shown
-  // };
-
   const openInstrumentMenu = (slot) => {
     setSelectedSlot(slot); // Set the slot for which the menu should be shown
   };
-
-  // Function to update the selected instrument for the currently selected color
-  // const updateInstrumentForColor = (instrument) => {
-  //   setColorInstrumentMap((prevMap) => ({
-  //     ...prevMap,
-  //     [selectedColor]: instrument, // Update the map with the selected instrument for the color
-  //   }));
-  //   closeInstrumentMenu(); // Close the modal after selection
-  // };
 
   const updateInstrumentForColor = (instrument) => {
     setColorInstrumentMap((prevMap) => ({
@@ -797,10 +704,6 @@ const CanvasComponent = () => {
     }));
   };
 
-  // Function to close the instrument selection menu
-  // const closeInstrumentMenu = () => {
-  //   setSelectedColor(null); // Clear the selected color, hiding the modal
-  // };
 
   const closeInstrumentMenu = () => {
     setSelectedSlot(null); // Clear the selected slot, hiding the modal
@@ -912,8 +815,37 @@ const CanvasComponent = () => {
     // console.log("Current playback speed:", playbackSpeedValue);
   };
 
+  const getClosestPointOnSegment = (point, start, end) => {
+    const [px, py] = point;
+    const [x1, y1] = start;
+    const [x2, y2] = end;
+  
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+  
+    if (dx === 0 && dy === 0) {
+      // The segment is a single point
+      return [x1, y1];
+    }
+  
+    // Calculate the projection of the point onto the line segment
+    const t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
+  
+    if (t < 0) {
+      // Closest point is the start of the segment
+      return [x1, y1];
+    } else if (t > 1) {
+      // Closest point is the end of the segment
+      return [x2, y2];
+    } else {
+      // Closest point is somewhere in the middle of the segment
+      return [x1 + t * dx, y1 + t * dy];
+    }
+  };
+
   // Called when user starts drawing (pointer down)
   const handlePointerDown = (e) => {
+    setWasDragged(false); // Reset the dragging flag
     e.target.setPointerCapture(e.pointerId);
     // const clickPoint = [e.pageX, e.pageY];
     const canvasRect = svgRef.current.getBoundingClientRect();
@@ -924,9 +856,12 @@ const CanvasComponent = () => {
     const containerRect = container.getBoundingClientRect();
     const clickPoint = [e.clientX - containerRect.left, e.clientY - containerRect.top];
 
+    clickPointRef.current = clickPoint; // Store the clickPoint in the ref
+
     if (isEditMode) {
-      // Check if the click intersects with any line
-      const clickedLine = lines.find((line) =>
+      // const clickedLine = lines.find((line) =>
+      const clickedLine = [...lines].reverse().find((line) =>
+        !line.isEraser && // Ignore eraser lines
         line.points.some((startPoint, index) => {
           if (index === line.points.length - 1) return false; // Skip the last point
           const endPoint = line.points[index + 1];
@@ -940,8 +875,32 @@ const CanvasComponent = () => {
       );
   
       if (clickedLine) {
-        setSelectedLine(clickedLine); // Set the clicked line as the selected line
+        // Find the closest point on the line to the click point
+        let closestPoint = null;
+        let minDistance = Infinity;
+  
+        clickedLine.points.forEach((startPoint, index) => {
+          if (index === clickedLine.points.length - 1) return; // Skip the last point
+          const endPoint = clickedLine.points[index + 1];
+          const pointOnSegment = getClosestPointOnSegment(clickPoint, startPoint, endPoint);
+          const distance = Math.hypot(pointOnSegment[0] - clickPoint[0], pointOnSegment[1] - clickPoint[1]);
+  
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestPoint = pointOnSegment;
+          }
+        });
+  
+        setDraggedLine(clickedLine); // Set the clicked line as the dragged line
+        setOriginalLinePoints(clickedLine.points); // Store the original points of the line
+        setIsDragging(true); // Enable dragging
+        setDragOffset([clickPoint[0] - closestPoint[0], clickPoint[1] - closestPoint[1]]); // Calculate the offset
+        setInitialDragPoint(clickPoint); // Store the initial cursor position
       }
+    }
+
+    if (isEditMode) {
+      return; // Block drawing when Edit Mode is active
     }
 
     if (isTrash) {
@@ -1001,15 +960,61 @@ const CanvasComponent = () => {
   };
 
   const handlePointerMove = (e) => {
-    if (e.buttons !== 1) return; // Only draw when mouse button is held down
-    // const canvasRect = svgRef.current.getBoundingClientRect();
-    // const newPoint = [e.clientX - canvasRect.left, e.clientY - canvasRect.top, e.pressure];
-    // const newPoint = [e.pageX, e.pageY, e.pressure];
 
+    // Handle line dragging in Edit Mode
+    if (isDragging && draggedLine && originalLinePoints && initialDragPoint) {
+      setWasDragged(true); // Mark as dragged
+      const canvasRect = svgRef.current.getBoundingClientRect();
+      const currentPoint = [e.clientX - canvasRect.left, e.clientY - canvasRect.top];
+
+      // Calculate the offset relative to the initial drag point
+      const offsetX = currentPoint[0] - initialDragPoint[0];
+      const offsetY = currentPoint[1] - initialDragPoint[1];
+
+      // Update the position of the dragged line
+      const updatedLines = lines.map((line) =>
+        line.lineId === draggedLine.lineId
+          ? {
+              ...line,
+              points: originalLinePoints.map(([x, y]) => [x + offsetX, y + offsetY]),
+            }
+          : line
+      );
+
+      setLines(updatedLines);
+
+      // Recalculate intersections for the dragged line
+      const updatedIntersectedDots = { ...intersectedDots.current };
+
+      // Clear old intersections for the dragged line
+      for (const column in updatedIntersectedDots) {
+        for (const row in updatedIntersectedDots[column]) {
+          if (updatedIntersectedDots[column][row].lineId === draggedLine.lineId) {
+            delete updatedIntersectedDots[column][row];
+          }
+        }
+      }
+
+      // Recalculate intersections for the new position of the dragged line
+      const spatialHash = createSpatialHash(gridConfig);
+      const updatedDraggedLine = updatedLines.find((line) => line.lineId === draggedLine.lineId);
+      calculateIntersections(updatedDraggedLine, gridConfig, updatedIntersectedDots, spatialHash);
+
+      // Update the intersectedDots reference and trigger a re-render
+      intersectedDots.current = updatedIntersectedDots;
+      // setIntersectedDotsState({ ...updatedIntersectedDots });
+
+      return; // Exit early to avoid processing other modes
+    }
+
+    if (isEditMode) {
+      return; // Block all drawing-related logic when Edit Mode is active
+    }
+
+    if (e.buttons !== 1) return; // Only draw when mouse button is held down
     const container = document.querySelector('.canvas-container');
     const containerRect = container.getBoundingClientRect();
     const newPoint = [e.clientX - containerRect.left, e.clientY - containerRect.top, e.pressure];
-
 
     if (isTrash && isPointerDown) {
       const { clientX, clientY } = e;
@@ -1094,6 +1099,42 @@ const CanvasComponent = () => {
   };
 
   const handlePointerUp = () => {
+    if (!wasDragged && isEditMode) {
+
+      // Use the clickPoint stored in the ref
+      const clickPoint = clickPointRef.current;
+
+      if (!clickPoint) return; // Ensure clickPoint is defined
+
+      // Check if the click intersects with any line
+      // const clickedLine = lines.find((line) =>
+      const clickedLine = [...lines].reverse().find((line) =>
+        !line.isEraser && // Ignore eraser lines
+        line.points.some((startPoint, index) => {
+          if (index === line.points.length - 1) return false; // Skip the last point
+          const endPoint = line.points[index + 1];
+          return isPointNearLineSegment(
+            clickPoint,
+            startPoint,
+            endPoint,
+            line.size // Include the stroke width in the calculation
+          );
+        })
+      );
+  
+      if (clickedLine) {
+        setSelectedLine(clickedLine); // Set the clicked line as the selected line
+      }
+    }
+
+    if (isDragging && draggedLine) {
+      setIntersectedDotsState({ ...intersectedDots.current });
+      // Reset dragging state
+      setIsDragging(false);
+      setDraggedLine(null);
+      setOriginalLinePoints(null); // Clear the original points
+    }
+
     if (isTrash) {
       //TEMPORARYTESTING TEMPORARYTESTING TEMPORARYTESTING TEMPORARYTESTING TEMPORARYTESTING
       setIsPointerDown(false);
@@ -1156,8 +1197,6 @@ const CanvasComponent = () => {
         lineId, // Assign the unique ID to the line
         intersections: {}, // Initialize an object to store intersections
       };
-      // console.log('New Line Created:', newLine.color, newLine.highlightColor);
-
 
       // Update idInstrumentMap with the new line's instrument
       setIdInstrumentMap((prevMap) => ({
@@ -1190,6 +1229,10 @@ const CanvasComponent = () => {
 
       const spatialHash = createSpatialHash(gridConfig);
       calculateIntersections(newLine, gridConfig, updatedIntersectedDots, spatialHash);
+
+      // Update the intersectedDots reference and trigger a re-render
+      // intersectedDots.current = updatedIntersectedDots;
+      setIntersectedDotsState({ ...updatedIntersectedDots });
 
       // Save the new line and reset the current state
       setUndoStack([...undoStack, { lines, sonificationPoints }]);
@@ -1252,7 +1295,6 @@ const CanvasComponent = () => {
         await Promise.all(playPromises);
       }
 
-
       // Dynamically adjust tempo using `playbackSpeedRef.current`
       await new Promise(resolve =>
         setTimeout(resolve, playbackSpeedRef.current)
@@ -1268,43 +1310,23 @@ const CanvasComponent = () => {
     console.timeEnd('Sonification');
   };
 
-
-  // const updateLineColor = (line, newColor) => {
-  //   setLines((prevLines) =>
-  //     prevLines.map((l) =>
-  //       l.lineId === line.lineId ? { ...l, color: newColor, highlightColor: newColor } : l
-  //     )
-  //   );
-  //   setSelectedLine(null); // Close the modal after updating
-  // };
-
   const updateLineColor = (line, newColor) => {
     setLines((prevLines) =>
       prevLines.map((l) =>
         l.lineId === line.lineId ? { ...l, color: newColor, highlightColor: newColor } : l
       )
     );
-  
-    // Update intersectedDots to reflect the new color
+
     for (const column in intersectedDots.current) {
-      for (const row in intersectedDots.current[column]) {
-        if (intersectedDots.current[column][row].lineId === line.lineId) {
-          intersectedDots.current[column][row].color = newColor; // Update the color
+      for (const row in intersectedDotsState[column]) {
+        if (intersectedDotsState[column][row].lineId === line.lineId) {
+          intersectedDotsState[column][row].color = newColor; // Update the color
         }
       }
     }
   
     setSelectedLine(null); // Close the modal after updating
   };
-
-  // const updateLineInstrument = (line, newInstrument) => {
-  //   setLines((prevLines) =>
-  //     prevLines.map((l) =>
-  //       l.lineId === line.lineId ? { ...l, instrument: newInstrument } : l
-  //     )
-  //   );
-  //   setSelectedLine(null); // Close the modal after updating
-  // };
 
   const updateLineInstrument = (line, newInstrument) => {
     setLines((prevLines) =>
@@ -1467,7 +1489,6 @@ const CanvasComponent = () => {
   return (
     <div className="main-container">
       <div className="controls-container">
-
         <div className="play-group">
           <button
             ref={playStopButtonRef} // Add a ref here
@@ -1488,34 +1509,55 @@ const CanvasComponent = () => {
           </button>
         </div>
 
-        {/* Loop & Scale Control */}
-        <div className="loop-scale-group">
+        <div className="color-group">
+          {Object.keys(colorInstrumentMap).map((slot, index) => (
+            <div key={index} className="color-instrument-pair">
+              {/* Color button */}
+              <button
+                className={`color-button ${currentColor === slot ? 'active' : ''}`}
+                // style={{ backgroundColor: colorSlots[slot], position: 'relative' }} // Add relative positioning
+                // style={{ backgroundColor: colorSlots[slot], borderColor: colorSlots[slot] }}
+                style={{ borderColor: colorSlots[slot], border: `12px solid ${colorSlots[slot]}` }}
+                onMouseDown={() => handleMouseDown(slot)} // Detect long press
+                onMouseUp={handleMouseUp} // Clear timer on release
+                onMouseLeave={handleMouseUp} // Clear timer if the mouse leaves the button
+                onClick={() => {
+                  setCurrentColor(slot); // Set the selected slot
+                  setIsEraser(false);    // Deactivate eraser
+                  setIsTrash(false);     // Deactivate trash
+                }}
+              >
+                {/* Instrument icon overlay */}
+                <img
+                  src={instrumentIcons[colorInstrumentMap[slot]]}
+                  alt={colorInstrumentMap[slot]}
+                  className="color-button-instrument-icon"
+                />
+              </button>
+              {/* Instrument button */}
+              <button
+                className="instrument-select-button"
+                onClick={() => openInstrumentMenu(slot)}
+              >
+                <img src={GearIcon} alt="Settings Button" className="iconGear" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="edit-container">
           <button
-            className={`loop-button ${loop ? 'active' : 'inactive'}`}
-            onClick={() => setLoop(!loop)}
+            className={`edit-button ${isEditMode ? 'active' : ''}`}
+            onClick={() => setIsEditMode(!isEditMode)} // Toggle Edit Mode
           >
-            <img
-              src={loop ? LoopIcon : NoLoopIcon}
-              alt={loop ? "Loop" : "noLoop"}
-              className={loop ? "iconLoop" : "noLoop"}
-            />
-          </button>
-          <button
-            className="scale-button"
-            onClick={() => setIsScaleMenuOpen(true)} // Open the pop-up
-          >
-            <img
-              src={scaleIcons[currentScale]}
-              alt={`${currentScale} icon`}
-              className="scale-icon"
-            />
+            <img src={EditIcon} alt="Edit" className="iconEdit" />
           </button>
         </div>
 
         {/* Brush size slider */}
         {/* Playback Speed Slider */}
         <div className="vertical-sliders-1">
-          <div className="brush-size-group">
+          {/* <div className="brush-size-group">
             <input
               type="range"
               min="1"
@@ -1523,6 +1565,22 @@ const CanvasComponent = () => {
               step="1"
               value={currentSize}
               onChange={(e) => setCurrentSize(Number(e.target.value))}
+            />
+          </div> */}
+          <div className="volume-slider-group">
+            {/* <label htmlFor="grid-slider">Grid Configuration</label> */}
+            <input
+              id="volume-slider"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => {
+                const newVolume = parseFloat(e.target.value);
+                setVolume(newVolume); // Update the state
+                setMasterVolume(newVolume); // Update the global volume
+              }}
             />
           </div>
           <div className="slider-group">
@@ -1556,100 +1614,40 @@ const CanvasComponent = () => {
               onChange={handleGridChange}
             />
           </div>
-          <div className="volume-slider-group">
-            {/* <label htmlFor="grid-slider">Grid Configuration</label> */}
+          <div className="brush-size-group">
             <input
-              id="volume-slider"
               type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={(e) => {
-                const newVolume = parseFloat(e.target.value);
-                setVolume(newVolume); // Update the state
-                setMasterVolume(newVolume); // Update the global volume
-              }}
+              min="1"
+              max="50"
+              step="1"
+              value={currentSize}
+              onChange={(e) => setCurrentSize(Number(e.target.value))}
             />
           </div>
         </div>
 
-        <div className="edit-container">
+        {/* Loop & Scale Control */}
+        <div className="loop-scale-group">
           <button
-            className={`edit-button ${isEditMode ? 'active' : ''}`}
-            onClick={() => setIsEditMode(!isEditMode)} // Toggle Edit Mode
+            className={`loop-button ${loop ? 'active' : 'inactive'}`}
+            onClick={() => setLoop(!loop)}
           >
-            <img src={EditIcon} alt="Edit" className="iconEdit" />
+            <img
+              src={loop ? LoopIcon : NoLoopIcon}
+              alt={loop ? "Loop" : "noLoop"}
+              className={loop ? "iconLoop" : "noLoop"}
+            />
           </button>
-        </div>
-
-        {/* <div className="color-group">
-          {Object.keys(colorInstrumentMap).map((slot, index) => (
-            <div key={index} className="color-instrument-pair">
-              
-              <button
-                className={`color-button ${currentColor === slot ? 'active' : ''}`}
-                style={{ backgroundColor: colorSlots[slot] }}
-                onMouseDown={() => handleMouseDown(slot)}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onClick={() => {
-                  setCurrentColor(slot);
-                  setIsEraser(false);
-                  setIsTrash(false);
-                }}
-              />
-            
-              <button
-                className="instrument-select-button"
-                onClick={() => openInstrumentMenu(slot)}
-              >
-                <img
-                  src={instrumentIcons[colorInstrumentMap[slot]]}
-                  alt={colorInstrumentMap[slot]}
-                  className="instrument-sidebar-icon"
-                />
-              </button>
-            </div>
-          ))}
-        </div> */}
-
-        <div className="color-group">
-          {Object.keys(colorInstrumentMap).map((slot, index) => (
-            <div key={index} className="color-instrument-pair">
-              {/* Color button */}
-              <button
-                className={`color-button ${currentColor === slot ? 'active' : ''}`}
-                style={{ backgroundColor: colorSlots[slot], position: 'relative' }} // Add relative positioning
-                onMouseDown={() => handleMouseDown(slot)} // Detect long press
-                onMouseUp={handleMouseUp} // Clear timer on release
-                onMouseLeave={handleMouseUp} // Clear timer if the mouse leaves the button
-                onClick={() => {
-                  setCurrentColor(slot); // Set the selected slot
-                  setIsEraser(false);    // Deactivate eraser
-                  setIsTrash(false);     // Deactivate trash
-                }}
-              >
-                {/* Instrument icon overlay */}
-                <img
-                  src={instrumentIcons[colorInstrumentMap[slot]]}
-                  alt={colorInstrumentMap[slot]}
-                  className="color-button-instrument-icon"
-                />
-              </button>
-              {/* Instrument button */}
-              <button
-                className="instrument-select-button"
-                onClick={() => openInstrumentMenu(slot)}
-              >
-                <img
-                  src={instrumentIcons[colorInstrumentMap[slot]]}
-                  alt={colorInstrumentMap[slot]}
-                  className="instrument-sidebar-icon"
-                />
-              </button>
-            </div>
-          ))}
+          <button
+            className="scale-button"
+            onClick={() => setIsScaleMenuOpen(true)} // Open the pop-up
+          >
+            <img
+              src={scaleIcons[currentScale]}
+              alt={`${currentScale} icon`}
+              className="scale-icon"
+            />
+          </button>
         </div>
 
         {/* Center the Eraser button in its own container */}
@@ -1672,7 +1670,7 @@ const CanvasComponent = () => {
               setIsEraser(!isEraser); // Toggle the eraser mode
             }}
           >
-            <img src={EraseIcon} alt="Eraser" className="iconTrash" />
+            <img src={EraseIcon} alt="Eraser" className="iconEraser" />
           </button>
 
           <button
@@ -1693,7 +1691,7 @@ const CanvasComponent = () => {
               setIsTrash(!isTrash); // Toggle the eraser mode
             }}
           >
-            <img src={TrashIcon} alt="Eraser" className="iconEraser" />
+            <img src={TrashIcon} alt="Trash" className="iconTrash" />
           </button>
         </div>
 
@@ -1713,15 +1711,8 @@ const CanvasComponent = () => {
             <img src={GridIcon} alt="Grid Icon" className="iconGrid" />
           </button>
 
-          {/* <button className="clean-button" onClick={handleClearScreen}>
+          <button className="clean-button" onClick={handleClearScreen}>
             <img src={CleanIcon} alt="Clean Icon" className="iconClean" />
-          </button> */}
-
-          <button
-            className="settings-button"
-            onClick={handleSettingsButtonClick} // Open the custom pop-up
-          >
-            <img src={GearIcon} alt="Settings Button" className="iconGear" />
           </button>
 
         </div>
@@ -1760,9 +1751,22 @@ const CanvasComponent = () => {
         </svg>
       </div>
 
-      <div className="canvas-container">
+      <div 
+        // className="canvas-container">
+        className={`canvas-container ${isEditMode ? 'edit-mode-active' : ''}`}
+        // style={{
+        //   backgroundColor: isEditMode ? '#f0f0f0' : '#ffffff', // Change background color dynamically
+        // }}
+        >
         {/* Grid Canvas Component */}
-        <GridCanvas showGrid={showGrid} scannedColumn={scannedColumn} intersectedDots={intersectedDots.current} gridConfig={gridConfig} colorSlots={colorSlots} />
+        <GridCanvas
+         showGrid={showGrid}
+         scannedColumn={scannedColumn}
+         intersectedDots={intersectedDots.current}
+        //  intersectedDots={intersectedDotsState} // Use the state instead of the ref
+         gridConfig={gridConfig}
+         colorSlots={colorSlots}
+        />
 
         {/* SVG Drawing Area */}
         <svg
@@ -1802,70 +1806,9 @@ const CanvasComponent = () => {
             </button>
             <span className="settings-label">Clean Canvas</span>
           </div>
-          {/* <div className="settings-option">
-            <button className="save-button" onClick={handleSaveDrawing}>
-              <img src={downloadIcon} alt="Download Icon" className="iconDown" />
-            </button>
-            <span className="settings-label">Export</span>
-          </div>
-          <div className="settings-option">
-            <button className="load-button" onClick={() => loadInputRef.click()}>
-              <img src={uploadIcon} alt="Upload Icon" className="iconUp" />
-            </button>
-            <span className="settings-label">Import</span>
-          </div> */}
         </div>
       </div>
       )}
-
-      {/* {activeColorSlot && (
-        <div ref={colorPaletteRef} className="color-palette-modal">
-          <button onClick={closeColorPalette} className="close-modal-button top-left"></button>
-          <div className="color-palette">
-            {colorPaletteGrid.map((row, rowIndex) =>
-              row.map((color, colIndex) => (
-                <button
-                  key={`${rowIndex}-${colIndex}`}
-                  style={{ backgroundColor: color }}
-                  className="color-option"
-                  onClick={() => {
-                    updateColorForSlot(activeColorSlot, color);
-                    closeColorPalette();
-                  }}
-                />
-              ))
-            )}
-          </div>
-        </div>
-      )} */}
-
-      {/* Instrument Selection Modal */}
-      {/* {selectedColor && (
-        <div ref={instrumentMenuRef} className="instrument-selection-modal">
-          <button onClick={closeInstrumentMenu} className="close-modal-button top-left">
-            <img src={quitIcon} alt="Close" className="iconQuit" />
-          </button>
-          <div className="instrument-options-grid">
-            {instrumentOptions.map((instrument, index) => (
-              <div key={index} className="instrument-option-cell">
-                <button
-                  onClick={() => updateInstrumentForColor(instrument)}
-                  className="instrument-option-button"
-                >
-                  <img
-                    src={instrumentIcons[instrument]}
-                    alt={instrument}
-                    className="instrument-icon"
-                  />
-                </button>
-                <span className="instrument-label">
-                  {customInstrumentNames[instrument]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )} */}
 
       {/* Scale Selection Modal */}
       {isScaleMenuOpen && (
@@ -1896,51 +1839,6 @@ const CanvasComponent = () => {
         </div>
       )}
 
-      {/* {selectedSlot && (
-        <div ref={instrumentMenuRef} className="combined-selection-modal">
-          <button onClick={closeInstrumentMenu} className="close-modal-button top-left">
-            <img src={quitIcon} alt="Close" className="iconQuit" />
-          </button>
-          <div className="combined-options-grid">
-
-            <div className="color-options">
-              {colorPaletteGrid.map((row, rowIndex) =>
-                row.map((color, colIndex) => (
-                  <button
-                    key={`${rowIndex}-${colIndex}`}
-                    style={{ backgroundColor: color }}
-                    className="color-option"
-                    onClick={() => {
-                      updateColorForSlot(selectedSlot, color);
-                    }}
-                  />
-                ))
-              )}
-            </div>
-
-            <div className="instrument-options">
-              {instrumentOptions.map((instrument, index) => (
-                <div key={index} className="instrument-option-cell">
-                  <button
-                    onClick={() => updateInstrumentForColor(instrument)}
-                    className="instrument-option-button"
-                  >
-                    <img
-                      src={instrumentIcons[instrument]}
-                      alt={instrument}
-                      className="instrument-icon"
-                    />
-                  </button>
-                  <span className="instrument-label">
-                    {customInstrumentNames[instrument]}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )} */}
-
       {selectedSlot && (
         <div ref={instrumentMenuRef} className="combined-selection-modal">
           <button onClick={closeInstrumentMenu} className="close-modal-button top-left">
@@ -1953,6 +1851,7 @@ const CanvasComponent = () => {
                 <button
                   key={`${rowIndex}-${colIndex}`}
                   style={{ backgroundColor: color }}
+                  // style={{ borderColor: color }}
                   className="color-option"
                   onClick={() => {
                     updateColorForSlot(selectedSlot, color); 
@@ -1985,7 +1884,6 @@ const CanvasComponent = () => {
         </div>
       )}
 
-
       {selectedLine && (
         <div ref={instrumentMenuRef} className="combined-selection-modal">
           <button onClick={() => setSelectedLine(null)} className="close-modal-button top-left">
@@ -1998,6 +1896,7 @@ const CanvasComponent = () => {
                 <button
                   key={`${rowIndex}-${colIndex}`}
                   style={{ backgroundColor: color }}
+                  // style={{ borderColor: color }}
                   className="color-option"
                   onClick={() => {
                     updateLineColor(selectedLine, color); // Update the line's color
