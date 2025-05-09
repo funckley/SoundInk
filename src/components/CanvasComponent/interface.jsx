@@ -1544,13 +1544,65 @@ const CanvasComponent = () => {
             </div>
           ))}
         </div>
-
+{/* 
         <div className="edit-container">
+          <button
+            className={`edit-button ${isEditMode ? 'active' : ''}`}
+            onClick={() => setIsEditMode(!isEditMode)}
+          >
+            <img src={EditIcon} alt="Edit" className="iconEdit" />
+          </button>
+        </div> */}
+
+
+        {/* Center the Eraser button in its own container */}
+        <div className="eraser-container">
+          {/* <button
+            className={`eraser-button ${isEraser ? 'active' : ''}`}
+            // onClick={() => setIsEraser(!isEraser)}
+            onClick={() => {
+              if (isEraser) {
+                // If eraser is already on, turn it off and restore the previous color
+                setCurrentColor(previousColor);
+                setIsTrash(false);
+              } else {
+                // If eraser is off, save the current color and set to eraser color
+                setPreviousColor(currentColor);
+                // setCurrentColor(ERASER_COLOR);
+                setCurrentColor('eraser');
+                setIsTrash(false);
+              }
+              setIsEraser(!isEraser); // Toggle the eraser mode
+            }}
+          >
+            <img src={EraseIcon} alt="Eraser" className="iconEraser" />
+          </button> */}
           <button
             className={`edit-button ${isEditMode ? 'active' : ''}`}
             onClick={() => setIsEditMode(!isEditMode)} // Toggle Edit Mode
           >
             <img src={EditIcon} alt="Edit" className="iconEdit" />
+          </button>
+
+          <button
+            className={`trash-button ${isTrash ? 'active' : ''}`}
+            // onClick={() => setIsTrash(!isTrash)}
+            onClick={() => {
+              if (isTrash) {
+                // If eraser is already on, turn it off and restore the previous color
+                setCurrentColor(previousColor);
+                setIsEraser(false);
+              } else {
+                // If eraser is off, save the current color and set to eraser color
+                setPreviousColor(currentColor);
+                // setCurrentColor(ERASER_COLOR);
+                setCurrentColor('eraser');
+                setIsEraser(false);
+              }
+              setIsTrash(!isTrash); // Toggle the eraser mode
+            }}
+          >
+            <img src={TrashIcon} alt="Trash" className="iconTrash" />
           </button>
         </div>
 
@@ -1647,51 +1699,6 @@ const CanvasComponent = () => {
               alt={`${currentScale} icon`}
               className="scale-icon"
             />
-          </button>
-        </div>
-
-        {/* Center the Eraser button in its own container */}
-        <div className="eraser-container">
-          <button
-            className={`eraser-button ${isEraser ? 'active' : ''}`}
-            // onClick={() => setIsEraser(!isEraser)}
-            onClick={() => {
-              if (isEraser) {
-                // If eraser is already on, turn it off and restore the previous color
-                setCurrentColor(previousColor);
-                setIsTrash(false);
-              } else {
-                // If eraser is off, save the current color and set to eraser color
-                setPreviousColor(currentColor);
-                // setCurrentColor(ERASER_COLOR);
-                setCurrentColor('eraser');
-                setIsTrash(false);
-              }
-              setIsEraser(!isEraser); // Toggle the eraser mode
-            }}
-          >
-            <img src={EraseIcon} alt="Eraser" className="iconEraser" />
-          </button>
-
-          <button
-            className={`trash-button ${isTrash ? 'active' : ''}`}
-            // onClick={() => setIsTrash(!isTrash)}
-            onClick={() => {
-              if (isTrash) {
-                // If eraser is already on, turn it off and restore the previous color
-                setCurrentColor(previousColor);
-                setIsEraser(false);
-              } else {
-                // If eraser is off, save the current color and set to eraser color
-                setPreviousColor(currentColor);
-                // setCurrentColor(ERASER_COLOR);
-                setCurrentColor('eraser');
-                setIsEraser(false);
-              }
-              setIsTrash(!isTrash); // Toggle the eraser mode
-            }}
-          >
-            <img src={TrashIcon} alt="Trash" className="iconTrash" />
           </button>
         </div>
 
