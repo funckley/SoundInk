@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, createContext, useContext } from 'react';
 import './interface.css'; // Importing the associated CSS file for styles
 import { PlayIcon, StopIcon, UndoIcon, RedoIcon, BrushIcon, EraseIcon, LoopIcon, TempoIcon, GridIcon, GearIcon, TrashIcon, quitIcon, NoLoopIcon, downloadIcon, uploadIcon, CleanIcon, muteIcon, bassIcon, guitarIcon, marimbaIcon, pianoIcon, violinIcon, fluteIcon, glassIcon, synthIcon, majorIcon, harmonicMinorIcon, melodicMinorIcon, minorPentatonicIcon, majorPentatonicIcon, instrumentIcons, scaleIcons, customInstrumentNames, customScaleNames, colors, sizes, MAX_DELAY, ERASER_COLOR, options, isPointNearDot, isPointNearLineSegment, useBpm, usePlaybackSpeed, useMediaQuery, uuidv4, stopSoundsForLine, preloadSounds, getSvgPathFromStroke, getStroke, getMapRowToNote, setScale, playSound, GridCanvas, firstColumn, fistColumnScan, numDotsX, numDotsY, dotRadius, canvasDimensions, gridConfigurations, setMasterVolume, getStrokeWidthFromOptions, calculateLocalWidth, PaletteIcon, EditIcon } from './import'; // Importing the necessary functions and constants from the import file
+import { mapNoteToSampleNumber, scales } from './soundMappings';
 import { Canvg } from 'canvg';
 import pointInPolygon from 'point-in-polygon'; // Import the library
 import { getStrokePoints, getStrokeOutlinePoints } from 'perfect-freehand'; // Importing the necessary functions from perfect-freehand
@@ -8,6 +9,7 @@ import { getStrokePoints, getStrokeOutlinePoints } from 'perfect-freehand'; // I
 const pointInterpolationDivisor = 10; // Adjust this value to control the density of interpolated points
 
 const CanvasComponent = () => {
+  const [activePointerId, setActivePointerId] = useState(null); // Track the active pointer ID
   const { playbackSpeed, setPlaybackSpeed } = usePlaybackSpeed(); // Access playbackSpeed
   const [sonificationPoints, setSonificationPoints] = useState([]); // Points that trigger sounds
   const [lines, setLines] = useState([]); // List of drawn lines
@@ -290,7 +292,7 @@ const CanvasComponent = () => {
     setIsSavePopupVisible(true);
   };
 
-  const handleSave = async ({ saveJson, saveImage, saveAudio }) => {
+  const handleSave = async ({ saveJson, saveImage, saveAudio, audioLoops }) => {
     if (saveJson) {
       confirmSaveAsJson();
     }
@@ -298,7 +300,7 @@ const CanvasComponent = () => {
       confirmSaveAsImage();
     }
     if (saveAudio) {
-      await confirmSaveAsAudio();
+      await confirmSaveAsAudio(audioLoops);
     }
 
     setIsDownloading(false);
@@ -306,7 +308,22 @@ const CanvasComponent = () => {
   };
 
   const confirmSaveDrawing = () => {
-    const dataToSave = { lines, sonificationPoints, colorInstrumentMap };
+    // const dataToSave = { lines, sonificationPoints, colorInstrumentMap };
+    const dataToSave = {
+      // Drawing data
+      lines,                    // All line objects with their intersections
+      
+      // Instrument mapping
+      idInstrumentMap,          // CRITICAL - maps lineId to instrument
+      
+      // UI/Playback state
+      colorInstrumentMap,       // Current color slot -> instrument mapping
+      colorSlots,              // Custom colors for each slot
+      currentScale,            // Musical scale (e.g., 'pentatonicMinor')
+      gridIndex,               // Which grid config (0-5)
+      bpm,                     // Tempo
+      volume,                  // Master volume
+    };
 
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(svgRef.current);
@@ -333,7 +350,22 @@ const CanvasComponent = () => {
   // };
 
   const confirmSaveAsJson = () => {
-    const dataToSave = { lines, sonificationPoints, colorInstrumentMap };
+    // const dataToSave = { lines, sonificationPoints, colorInstrumentMap };
+    const dataToSave = {
+      // Drawing data
+      lines,                    // All line objects with their intersections
+      
+      // Instrument mapping
+      idInstrumentMap,          // CRITICAL - maps lineId to instrument
+      
+      // UI/Playback state
+      colorInstrumentMap,       // Current color slot -> instrument mapping
+      colorSlots,              // Custom colors for each slot
+      currentScale,            // Musical scale (e.g., 'pentatonicMinor')
+      gridIndex,               // Which grid config (0-5)
+      bpm,                     // Tempo
+      volume,                  // Master volume
+    };
 
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(svgRef.current);
@@ -366,8 +398,12 @@ const CanvasComponent = () => {
     const ctx = canvas.getContext("2d");
 
     const svgSize = svgElement.getBoundingClientRect();
-    canvas.width = svgSize.width;
-    canvas.height = svgSize.height;
+    const scale = 3;
+    canvas.width = svgSize.width * scale;
+    canvas.height = svgSize.height * scale;
+
+    // Scale the context to match
+    ctx.scale(scale, scale);
 
     // Draw a white background
     ctx.fillStyle = '#eae6e1';
@@ -390,72 +426,77 @@ const CanvasComponent = () => {
     a.click();
   };
 
-  const confirmSaveAsAudio = async () => {
-    // console.log("Starting audio recording...");
+  const confirmSaveAsAudio = async (loops = 0) => {
+    console.log(`Starting audio export with ${loops + 1} iteration(s)...`);
 
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const destination = audioContext.createMediaStreamDestination();
     const recorder = new MediaRecorder(destination.stream);
     const chunks = [];
-    // const recorder = new MediaRecorder(stream, {mimeType: 'audio/wav'});
 
     recorder.ondataavailable = (event) => {
       chunks.push(event.data);
     };
 
     recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: 'audio/mp3' });
+      const blob = new Blob(chunks, { type: 'audio/webm' });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'sonification.mp3';
+      a.download = 'sonification.webm';
       a.click();
 
       URL.revokeObjectURL(url);
-      // console.log("Audio recording saved.");
+      console.log("Audio export completed.");
     };
 
     recorder.start();
-    // console.log("Recorder started.");
+    console.log("Recorder started.");
 
-    // Play the sonification points without looping
-    for (let column = firstColumn; column < numDotsX; column++) {
-      if (intersectedDots.current[column]) {
-        const playPromises = [];
-        for (const row in intersectedDots.current[column]) {
-          const { color } = intersectedDots.current[column][row];
-          const mapRowToNote = getMapRowToNote();
-          const note = mapRowToNote[row];
+    // Play the sonification with the specified number of loops
+    for (let iteration = 0; iteration <= loops; iteration++) {
+      for (let column = firstColumn; column < gridConfigRef.current.numDotsX; column++) {
+        if (intersectedDots.current[column]) {
+          const playPromises = [];
+          
+          // Determine if this is an accent column
+          const isAccentColumn = (column - firstColumn) % gridConfigRef.current.accent === 0;
+          
+          for (const row in intersectedDots.current[column]) {
+            const { color, lineId } = intersectedDots.current[column][row];
+            const instrument = idInstrumentMapRef.current[lineId];
+            const mapRowToNote = getMapRowToNote();
+            const note = mapRowToNote[row];
 
-          playPromises.push(
-            playSound(
-              color,
-              note,
-              1,
-              playbackSpeedRef.current,
-              intersectedDots.current[column][row].lineId,
-              colorInstrumentMapRef.current,
-              false,
-              audioContext,
-              destination
-            )
-          );
+            playPromises.push(
+              playSound(
+                color,
+                note,
+                1,
+                playbackSpeedRef.current,
+                lineId,
+                { [color]: instrument },
+                isAccentColumn,
+                audioContext,
+                destination
+              )
+            );
+          }
+          await Promise.all(playPromises);
         }
-        await Promise.all(playPromises);
-      }
 
-      await new Promise(resolve =>
-        setTimeout(resolve, playbackSpeedRef.current)
-      );
+        await new Promise(resolve =>
+          setTimeout(resolve, playbackSpeedRef.current)
+        );
+      }
     }
 
     // Ensure all audio is played before stopping the recorder
-    const totalDuration = playbackSpeedRef.current * numDotsX;
+    const totalDuration = playbackSpeedRef.current * (gridConfigRef.current.numDotsX - firstColumn) * (loops + 1);
     setTimeout(() => {
       recorder.stop();
-      // console.log("Recorder stopped.");
-      // setIsSavePopupVisible(false); // Hide the pop-up
+      console.log("Recorder stopped.");
     }, totalDuration);
   };
 
@@ -472,14 +513,46 @@ const CanvasComponent = () => {
       const jsonData = JSON.parse(event.target.result);
 
       if (jsonData.dataset) {
-        const loadedLines = jsonData.dataset.lines || [];
-        const loadedSonificationPoints = jsonData.dataset.sonificationPoints || [];
-        const loadedColorInstrumentMap = jsonData.dataset.colorInstrumentMap || {};
-
-        // Update the state with loaded data
+        const loadedData = jsonData.dataset;
+        
+        // Load drawing data
+        const loadedLines = loadedData.lines || [];
         setLines(loadedLines);
-        setSonificationPoints(loadedSonificationPoints);
+        
+        // Load instrument mappings
+        const loadedIdInstrumentMap = loadedData.idInstrumentMap || {};
+        setIdInstrumentMap(loadedIdInstrumentMap);
+        
+        const loadedColorInstrumentMap = loadedData.colorInstrumentMap || {
+          color1: 'piano',
+          color2: 'epiano',
+          color3: 'marimba',
+        };
         setColorInstrumentMap(loadedColorInstrumentMap);
+        
+        // Load UI/Playback state
+        const loadedColorSlots = loadedData.colorSlots || {
+          color1: '#a9103a',
+          color2: '#043293',
+          color3: '#fead36',
+          eraser: '#eae6e0'
+        };
+        setColorSlots(loadedColorSlots);
+        
+        const loadedScale = loadedData.currentScale || 'pentatonicMinor';
+        setCurrentScale(loadedScale);
+        setScale(loadedScale); // Apply to global scale mapping
+        
+        const loadedGridIndex = loadedData.gridIndex !== undefined ? loadedData.gridIndex : 2;
+        setGridIndex(loadedGridIndex);
+        setGridConfig(gridConfigurations[loadedGridIndex]);
+        
+        const loadedBpm = loadedData.bpm || 250;
+        setBpm(loadedBpm);
+        
+        const loadedVolume = loadedData.volume !== undefined ? loadedData.volume : 0.8;
+        setVolume(loadedVolume);
+        setMasterVolume(loadedVolume); // Apply to audio system
 
         // Rebuild intersectedDots to link sonification points for playback
         const updatedIntersectedDots = {};
@@ -488,7 +561,11 @@ const CanvasComponent = () => {
             Object.entries(line.intersections).forEach(([column, rows]) => {
               if (!updatedIntersectedDots[column]) updatedIntersectedDots[column] = {};
               Object.entries(rows).forEach(([row, intersectionData]) => {
-                updatedIntersectedDots[column][row] = intersectionData;
+                updatedIntersectedDots[column][row] = {
+                  ...intersectionData,
+                  color: line.color,              // Use the line's actual hex color
+                  highlightColor: line.highlightColor || line.color  // Use the line's highlight color
+                };
               });
             });
           }
@@ -734,7 +811,7 @@ const CanvasComponent = () => {
 
   // Interpolates points between start and end to generate smooth lines
   const interpolatePoints = (start, end, numPoints) => {
-    console.time('Interpolation');
+    // console.time('Interpolation');
     const points = [];
     for (let i = 1; i <= numPoints; i++) {
       const t = i / (numPoints + 1);
@@ -744,50 +821,54 @@ const CanvasComponent = () => {
       // points.push([x, y, pressure]);
       points.push([x, y]);
     }
-    console.timeEnd('Interpolation');
+    // console.timeEnd('Interpolation');
     return points;
-  };
-
-  const alignDotsToGrid = (scaleX, scaleY) => {
-    const updatedDots = {};
-
-    Object.keys(intersectedDots.current).forEach((colIndex) => {
-      updatedDots[colIndex] = {};
-      Object.keys(intersectedDots.current[colIndex]).forEach((rowIndex) => {
-        const dot = intersectedDots.current[colIndex][rowIndex];
-        updatedDots[colIndex][rowIndex] = {
-          x: dot.x * scaleX,
-          y: dot.y * scaleY,
-          color: dot.color,
-        };
-      });
-    });
-
-    return updatedDots;
   };
 
   const handleResize = () => {
     const container = document.querySelector('.canvas-container');
+    if (!container) return;
+    
     const newWidth = container.clientWidth;
     const newHeight = container.clientHeight;
+
+    // Skip if dimensions haven't actually changed
+    if (newWidth === originalSvgSize.current.width && newHeight === originalSvgSize.current.height) {
+      return;
+    }
 
     // Calculate scale factors
     const scaleX = newWidth / originalSvgSize.current.width;
     const scaleY = newHeight / originalSvgSize.current.height;
 
-    // Update each line's points
-    const resizedLines = lines.map((line) => ({
-      ...line,
-      points: line.points.map(([x, y]) => [x * scaleX, y * scaleY]), // Scale points
-    }));
+    // Update each line's points and recalculate intersections
+    const resizedLines = lines.map((line) => {
+      const scaledPoints = line.points.map(([x, y]) => [x * scaleX, y * scaleY]);
+      
+      // Create a new line object with scaled points
+      const scaledLine = {
+        ...line,
+        points: scaledPoints,
+        intersections: {}, // Reset intersections, will be recalculated
+      };
+      
+      return scaledLine;
+    });
 
-    // Update `lines` with resized data
+    // Recalculate all intersections with the grid
+    const updatedIntersectedDots = {};
+    const spatialHash = createSpatialHash(gridConfigRef.current);
+
+    resizedLines.forEach((line) => {
+      calculateIntersections(line, gridConfigRef.current, updatedIntersectedDots, spatialHash);
+    });
+
+    // Update lines and intersections
     setLines(resizedLines);
+    intersectedDots.current = updatedIntersectedDots;
+    setIntersectedDotsState({ ...updatedIntersectedDots });
 
-    // Recalculate the positions of sonification dots
-    intersectedDots.current = alignDotsToGrid(scaleX, scaleY);
-
-    // Update the original size
+    // Update the original size reference
     originalSvgSize.current = { width: newWidth, height: newHeight };
   };
 
@@ -796,14 +877,7 @@ const CanvasComponent = () => {
     window.addEventListener('resize', resizeListener);
 
     return () => window.removeEventListener('resize', resizeListener);
-  }, [lines, intersectedDots]);
-
-  useEffect(() => {
-    const resizeListener = () => handleResize();
-    window.addEventListener('resize', resizeListener);
-
-    return () => window.removeEventListener('resize', resizeListener);
-  }, [lines, intersectedDots]);
+  }, [lines, gridConfig]);
 
   // Handles the slider input for changing playback speed
   const handleSliderChange = (e) => {
@@ -1245,7 +1319,7 @@ const CanvasComponent = () => {
   };
 
   const handlePlay = async () => {
-    console.time('Sonification');
+    // console.time('Sonification');
     if (isPlaying) return;
 
     setIsPlaying(true);
@@ -1307,7 +1381,7 @@ const CanvasComponent = () => {
     setCurrentColumn(-1);
     setScannedColumn(-1);
     setIsPlaying(false);
-    console.timeEnd('Sonification');
+    // console.timeEnd('Sonification');
   };
 
   const updateLineColor = (line, newColor) => {
@@ -1426,9 +1500,10 @@ const CanvasComponent = () => {
     const [saveJson, setSaveJson] = useState(true);
     const [saveImage, setSaveImage] = useState(true);
     const [saveAudio, setSaveAudio] = useState(true);
+    const [audioLoops, setAudioLoops] = useState(0);
 
     const handleSave = () => {
-      onSave({ saveJson, saveImage, saveAudio });
+      onSave({ saveJson, saveImage, saveAudio, audioLoops });
     };
 
     return (
@@ -1461,6 +1536,21 @@ const CanvasComponent = () => {
               />
               Save as Audio
             </label>
+            {saveAudio && (
+              <div style={{ marginLeft: '24px', marginTop: '8px' }}>
+                <label style={{ fontSize: '0.9em', color: '#666' }}>
+                  Loops: {audioLoops}
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    value={audioLoops}
+                    onChange={(e) => setAudioLoops(Number(e.target.value))}
+                    style={{ width: '100%', marginTop: '4px' }}
+                  />
+                </label>
+              </div>
+            )}
           </div>
           <div className="popup-buttons">
             <button onClick={handleSave}>Download</button>

@@ -67,18 +67,19 @@ export const preloadSounds = async () => {
 
   try {
     for (const filePath of soundFiles) {
-      let audioBuffer = await getFromDB(db, STORE_NAME, filePath);
+      let arrayBuffer = await getFromDB(db, STORE_NAME, filePath);
+      let audioBuffer;
 
-      if (!audioBuffer) {
+      if (!arrayBuffer) {
         const response = await fetch(filePath);
-        const arrayBuffer = await response.arrayBuffer();
-        audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-        await saveToDB(db, STORE_NAME, filePath, audioBuffer);
+        arrayBuffer = await response.arrayBuffer();
+        await saveToDB(db, STORE_NAME, filePath, arrayBuffer);
         console.log(`Preloaded and cached: ${filePath}`);
       } else {
         console.log(`Loaded from cache: ${filePath}`);
       }
 
+      audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
       bufferCache[filePath] = audioBuffer; // Store in memory cache
     }
   } catch (error) {
@@ -97,10 +98,14 @@ const loadAudioBuffer = async (filePath) => {
     delete bufferCache[Object.keys(bufferCache)[0]];
   }
 
-  const response = await fetch(filePath);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
+  const db = await openDB(DB_NAME, STORE_NAME);
+  let arrayBuffer = await getFromDB(db, STORE_NAME, filePath);
+  if (!arrayBuffer) {
+    const response = await fetch(filePath);
+    arrayBuffer = await response.arrayBuffer();
+    await saveToDB(db, STORE_NAME, filePath, arrayBuffer);
+  }
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
   bufferCache[filePath] = audioBuffer; // Cache the loaded buffer
   return audioBuffer;
 };

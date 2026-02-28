@@ -157,7 +157,7 @@ const GridCanvas = ({ showGrid, scannedColumn, intersectedDots, gridConfig, colo
     
             if (isScanned && isIntersected && !isBackgroundColor) {
                 // const lineColor = intersectData.color;
-                console.log('Scanned and intersected dot color:', lineColor);
+                // console.log('Scanned and intersected dot color:', lineColor);
                 drawGlowingDot(ctx, x, y, lineColor); // Draw intense glow
             } else if (isScanned) {
                 drawSmoothDot(ctx, x, y, 'rgba(255, 88, 51, 0.11)', true); // Mild glow for scanned dots
@@ -222,7 +222,7 @@ const GridCanvas = ({ showGrid, scannedColumn, intersectedDots, gridConfig, colo
     }, [scannedColumn, intersectedDots, showGrid]); // Redraw only the scanned column
 
     useEffect(() => {
-        console.log('Received Intersected Dots in GridCanvas:', intersectedDots);
+        // console.log('Received Intersected Dots in GridCanvas:', intersectedDots);
       }, [intersectedDots]);
 
     return showGrid ? <canvas ref={canvasRef} className="grid-canvas" /> : null;
