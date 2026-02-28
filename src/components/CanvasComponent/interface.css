@@ -12,18 +12,28 @@
 } */
 
 :root {
-  --canvasColor: #eae6e1;
-  --editmodeColor: #b7aea2;
-  --sideBarColor: #1f8956; 
-  --buttonColor: #b64545;
-  --buttonHoverColor: #bf5050;
-  --shadowBorder: #ffefd8;
-  --sliderColor: #b1e21185;
-  --shadowColor: #c8b66d;
-  --menuButtonColor: #4d9cae;
-  --menuColor: #96B378;
+  /* Canvas color variables - change these to customize your canvas theme */
+  --canvasColor: #b8b8b8; /* Current active canvas color (dynamically updated by JS) */
+  --defaultCanvasColor: #dddddd; /* Default canvas background color */
+  --editmodeColor: #bdc8cf; /* Edit mode canvas background color */
+  --eraserColor: #b8b8b8; /* Eraser color (should be close to canvas color) */
+  
+  /* Grid dot color variables - change these to customize grid appearance */
+  --gridDotColor: #b8b8b855; /* Default grid dot color */
+  --gridScannedDotColor: #c4c4c455; /* Color when playback cursor passes over dots */
+  --gridErasedDotColor: #c4c4c455; /* Color for erased dots */
+  
+  /* UI color variables */
+  --sideBarColor: #747474; 
+  --buttonColor: #404040;
+  --buttonHoverColor: #5a5a5a;
+  --shadowBorder: #be8c45;
+  --sliderColor: #4747479d;
+  --shadowColor: #dedede;
+  --menuButtonColor: #656565;
+  --menuColor: #808080;
   --menuTextColor: #2E2E2E;
-  --settingButtonColor: #1f57b8;
+  --settingButtonColor: #5c5c5c;
 }
 
 html, body {

@@ -84,7 +84,7 @@ const CanvasComponent = () => {
     color1: '#a9103a',
     color2: '#043293',
     color3: '#fead36',
-    eraser: '#eae6e0'
+    eraser: '#eae6e0' // Will be updated in useEffect to use CSS variable
   });
 
   const getSlotFromColor = (color) => {
@@ -405,8 +405,10 @@ const CanvasComponent = () => {
     // Scale the context to match
     ctx.scale(scale, scale);
 
-    // Draw a white background
-    ctx.fillStyle = '#eae6e1';
+    // Draw canvas background using CSS variable
+    const computedStyle = getComputedStyle(document.documentElement);
+    const canvasColor = computedStyle.getPropertyValue('--defaultCanvasColor').trim() || '#eae6e1';
+    ctx.fillStyle = canvasColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Use Canvg to render the SVG onto the canvas
@@ -535,7 +537,7 @@ const CanvasComponent = () => {
           color1: '#a9103a',
           color2: '#043293',
           color3: '#fead36',
-          eraser: '#eae6e0'
+          eraser: '#eae6e0' // Fallback, will be updated by CSS variable
         };
         setColorSlots(loadedColorSlots);
         
@@ -702,13 +704,27 @@ const CanvasComponent = () => {
 
   useEffect(() => {
     const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
   
     if (isEditMode) {
-      root.style.setProperty('--canvasColor', '#b7aea2'); // Light gray for Edit Mode
+      const editModeColor = computedStyle.getPropertyValue('--editmodeColor').trim();
+      root.style.setProperty('--canvasColor', editModeColor);
     } else {
-      root.style.setProperty('--canvasColor', '#eae6e1'); // Default canvas color
+      const defaultCanvasColor = computedStyle.getPropertyValue('--defaultCanvasColor').trim();
+      root.style.setProperty('--canvasColor', defaultCanvasColor);
     }
   }, [isEditMode]);
+
+  // Update eraser color from CSS variable on component mount
+  useEffect(() => {
+    const computedStyle = getComputedStyle(document.documentElement);
+    const eraserColor = computedStyle.getPropertyValue('--eraserColor').trim() || '#eae6e0';
+    
+    setColorSlots(prevSlots => ({
+      ...prevSlots,
+      eraser: eraserColor
+    }));
+  }, []);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -1877,7 +1893,7 @@ const CanvasComponent = () => {
           {isTrash && trashLinePoints.length > 0 && (
             <path
               d={getSvgPathFromStroke(trashLinePoints)}
-              stroke='#eae6e1'
+              stroke={getComputedStyle(document.documentElement).getPropertyValue('--defaultCanvasColor').trim() || '#eae6e1'}
               strokeWidth={5}
               fill="none"
             />

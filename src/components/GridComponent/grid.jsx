@@ -2,7 +2,23 @@ import React, { useRef, useEffect } from 'react';
 import { getStroke } from 'perfect-freehand';
 import { firstColumn, numDotsX, numDotsY, dotRadius } from './gridConfig'; // Import constants
 
-const ERASER_COLOR = '#eae6e1'; // Choose a color that represents the eraser
+// Get grid colors from CSS variables with fallbacks
+const getGridColors = () => {
+  if (typeof document !== 'undefined') {
+    const computedStyle = getComputedStyle(document.documentElement);
+    return {
+      regular: computedStyle.getPropertyValue('--gridDotColor').trim() || 'rgba(228, 193, 158, 0.5)',
+      scanned: computedStyle.getPropertyValue('--gridScannedDotColor').trim() || 'rgba(255, 88, 51, 0.11)',
+      erased: computedStyle.getPropertyValue('--gridErasedDotColor').trim() || 'rgba(228, 193, 158, 0.5)'
+    };
+  }
+  // Fallback for SSR
+  return {
+    regular: 'rgba(228, 193, 158, 0.5)',
+    scanned: 'rgba(255, 88, 51, 0.11)',
+    erased: 'rgba(228, 193, 158, 0.5)'
+  };
+};
 
 export const canvasDimensions = { width: 0, height: 0 }; // Export an object to store dimensions
 
@@ -133,6 +149,7 @@ const GridCanvas = ({ showGrid, scannedColumn, intersectedDots, gridConfig, colo
     const drawColumn = (ctx, column, containerWidth, containerHeight) => {
         const dotSpacingX = containerWidth / numDotsX; // Adjust spacing to fit 24 columns
         const dotSpacingY = containerHeight / numDotsY;
+        const gridColors = getGridColors(); // Get colors from CSS variables
     
         for (let j = 0; j < numDotsY; j++) {
             const x = column * dotSpacingX + dotSpacingX / 2;
@@ -160,12 +177,12 @@ const GridCanvas = ({ showGrid, scannedColumn, intersectedDots, gridConfig, colo
                 // console.log('Scanned and intersected dot color:', lineColor);
                 drawGlowingDot(ctx, x, y, lineColor); // Draw intense glow
             } else if (isScanned) {
-                drawSmoothDot(ctx, x, y, 'rgba(255, 88, 51, 0.11)', true); // Mild glow for scanned dots
+                drawSmoothDot(ctx, x, y, gridColors.scanned, true); // Scanned dot color from CSS
             } else if (isBackgroundColor) {
-                // For dots erased with the soft eraser, draw with the regular dot color
-                drawSmoothDot(ctx, x, y, 'rgba(228, 193, 158, 0.5)', false);
+                // For dots erased with the soft eraser, draw with the erased dot color
+                drawSmoothDot(ctx, x, y, gridColors.erased, false);
             } else {
-                drawSmoothDot(ctx, x, y, 'rgba(228, 193, 158, 0.5)', false); // Regular dot color
+                drawSmoothDot(ctx, x, y, gridColors.regular, false); // Regular dot color from CSS
             }
         }
     };

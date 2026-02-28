@@ -7,7 +7,7 @@ export const sizes = [25, 50];
 export const MAX_DELAY = 600; // Maximum delay in milliseconds for the slowest speed
 const color0 = '#161a1d'; // Default color for the first brush
 
-// export const ERASER_COLOR = '#eae6e1'; // Choose a color that represents the eraser
+// export const ERASER_COLOR = '#e5e5e5'; // Choose a color that represents the eraser
 export const ERASER_COLOR = 'color0'; // Choose a color that represents the eraser
 
 export const thinning = 0.5; // Amount to thin the stroke by
