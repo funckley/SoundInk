@@ -81,9 +81,9 @@ const CanvasComponent = () => {
 
   // Add a new state to manage the colors for each slot
   const [colorSlots, setColorSlots] = useState({
-    color1: '#a9103a',
-    color2: '#043293',
-    color3: '#fead36',
+    color1: '#4267c8',
+    color2: '#f44068',
+    color3: '#fbd45b',
     eraser: '#eae6e0' // Will be updated in useEffect to use CSS variable
   });
 
@@ -1623,7 +1623,7 @@ const CanvasComponent = () => {
                 className={`color-button ${currentColor === slot ? 'active' : ''}`}
                 // style={{ backgroundColor: colorSlots[slot], position: 'relative' }} // Add relative positioning
                 // style={{ backgroundColor: colorSlots[slot], borderColor: colorSlots[slot] }}
-                style={{ borderColor: colorSlots[slot], border: `12px solid ${colorSlots[slot]}` }}
+                style={{ borderColor: colorSlots[slot], border: `7px solid ${colorSlots[slot]}` }}
                 onMouseDown={() => handleMouseDown(slot)} // Detect long press
                 onMouseUp={handleMouseUp} // Clear timer on release
                 onMouseLeave={handleMouseUp} // Clear timer if the mouse leaves the button

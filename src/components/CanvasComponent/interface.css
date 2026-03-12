@@ -24,69 +24,74 @@
   --gridErasedDotColor: #98989866; /* Color for erased dots */
   
   /* UI color variables */
-  --sideBarColor: #747474; 
-  --buttonColor: #2b2b2b;
-  --buttonHoverColor: #5a5a5a;
-  --shadowBorder: #be8c45;
-  --sliderColor: #4747479d;
+  --sideBarColor: #9ABBC0; 
+  --buttonColor: #6E7879;
+  --buttonColorPlay: #DAC663;
+  --buttonColorPlayHover: #ebd773;
+  --buttonColorStop: #E06C4A;
+  --buttonColorStopHover: #ee8869;
+  --buttonHoverColor: #DAC663;
+  --shadowBorder: #E7B6AF;
+  --sliderColor: #DAC663;
   --shadowColor: #dedede;
-  --menuButtonColor: #2b2b2b;
-  --menuColor: #808080;
-  --menuTextColor: #2E2E2E;
+  --menuButtonColor: #E06C4A;
+  --menuColor: #E7B6AF;
+  --menuTextColor: #6E7879;
   
   /* Popup and dialog colors */
-  --popupBackgroundColor: #525252; /* Popup background color */
-  --popupButtonColor: #901e29; /* Primary popup button background */
-  --popupButtonHover: #9c1825; /* Popup button hover state */
-  --popupButtonHover2: #9e2424; /* Secondary popup button hover */
-  --popupButtonHover3: #c32b2b; /* Tertiary popup button hover */
+  --popupBackgroundColor: #E7B6AF; /* Popup background color */
+  --popupButtonColor: #E06C4A; /* Primary popup button background */
+  --popupButtonHover: #6E7879; /* Popup button hover state */
+  --popupButtonHover2: #6E7879; /* Secondary popup button hover */
+  --popupButtonHover3: #6E7879; /* Tertiary popup button hover */
   --popupButtonDark: #891515; /* Dark popup button variant */
-  --popupButtonTextColor: #ffd500; /* Popup button text color */
-  --popupHeaderColor: #ffffff; /* Popup title/header text color */
-  --popupTextColor: #dcdcdc; /* Popup main text color */
-  --popupLabelColor: #e8e8e8; /* Popup checkbox/form label color */
+  --popupButtonTextColor: #ffe2d6; /* Popup button text color */
+  --popupHeaderColor: #6E7879; /* Popup title/header text color */
+  --popupTextColor: #6E7879; /* Popup main text color */
+  --popupLabelColor: #6E7879; /* Popup checkbox/form label color */
   --popupBorderColor: #838383; /* Popup border color */
   
   /* Modal text colors - for consistent theming across all popups */
-  --modalHeaderTextColor: #ffffff; /* Modal titles/headings */
-  --modalBodyTextColor: #dcdcdc; /* Modal main text content */
-  --modalLabelTextColor: #e8e8e8; /* Modal labels and small text */
+  --modalHeaderTextColor: #6E7879; /* Modal titles/headings */
+  --modalBodyTextColor: #6E7879; /* Modal main text content */
+  --modalLabelTextColor: #6E7879; /* Modal labels and small text */
   --modalLoadingTextColor: #ffffff; /* Loading popup text */
   
   /* General interface colors */
   --errorColor: #ff0000; /* Error/warning indicator */
-  --darkButtonColor: #9e273e; /* Dark button variant */
+  --darkButtonColor: #6E7879; /* Dark button variant */
   --textColor: #333; /* General text color */
   --lightBackground: #ddd; /* Light background */
   --lightBackground2: #ccc; /* Lighter background variant */
-  --blackColor: #000; /* Pure black */
-  --settingButtonColor: #2b2b2b;
+  --spinColor: #DAC663; /* Pure black */
+  --settingButtonColor: #6E7879;
   
   /* Button styling variables - change these to customize button appearance */
-  --buttonBorderRadius: 13%; /* Main button corner roundness */
+  --buttonBorderRadius: 25%; /* Main button corner roundness */
+  --buttonBorderRadiusPopup: 25%; /* Popup button corner roundness */
   --buttonBorderWidth: 2px; /* Main button border thickness */
   --buttonFontSize: 1.8em; /* Button text/icon size */
   --buttonPadding: 0px; /* Button internal spacing */
   
   /* Component styling variables */
-  --modalBorderRadius: 5px; /* Modal/popup corner roundness */
+  --modalBorderRadius: 3%; /* Modal/popup corner roundness */
   --modalPadding: 20px; /* Modal internal spacing */
-  --sliderBorderRadius: 2px; /* Slider track corner roundness */
-  --sliderThumbBorderRadius: 13%; /* Slider thumb corner roundness */
+  --sliderBorderRadius: 15px; /* Slider track corner roundness */
+  --sliderThumbBorderRadius: 25%; /* Slider thumb corner roundness */
   --containerBorderWidth: 3px; /* Container border thickness */
   --containerPadding: 20px; /* Container internal spacing */
   
   /* Interactive element styling */
   --activeBorderWidth: 1px; /* Border thickness for active/hover states */
-  --smallButtonBorderRadius: 13%; /* Corner roundness for small buttons */
-  --circularBorderRadius: 50%; /* Perfect circles (sliders, etc.) */
+  --smallButtonBorderRadius: 25%; /* Corner roundness for small buttons */
+  --circularBorderRadius: 100%; /* Perfect circles (sliders, etc.) */
   
   /* Color picker and popup specific styling */
-  --colorOptionBorderRadius: 13%; /* Corner roundness for color picker squares */
-  --loadingContentBorderRadius: 2px; /* Corner roundness for loading/popup content */
+  --colorOptionBorderRadius: 25%; /* Corner roundness for color picker squares */
+  --loadingContentBorderRadius: 50px; /* Corner roundness for loading/popup content */
   --closeButtonBorderRadius: 5%; /* Corner roundness for close buttons */
-  --popupContentBorderRadius: 2px; /* Corner roundness for popup dialogs */
-  --popupButtonBorderRadius: 2px; /* Corner roundness for popup buttons */
+  --popupContentBorderRadius: 3%; /* Corner roundness for popup dialogs */
+  --popupButtonBorderRadius: 25%; /* Corner roundness for popup buttons */
 }
 
 html, body {
@@ -131,9 +136,6 @@ html, body {
   border: var(--containerBorderWidth) solid var(--sideBarColor);
   z-index: 1;
 }
-
-/* 4e76bb blue */
-/* 6c8654 green */
 
 @media (max-height: 800px) {
   .controls-container {
@@ -213,8 +215,8 @@ button {
   height: 75px !important;
   aspect-ratio: 1 / 1;
   border-radius: var(--buttonBorderRadius) !important;
-  /* border: 2px solid var(--buttonColor); */
-  /* border: 7px solid !important; */
+  /* border: 3px solid var(--buttonColor); */
+  /* border: 3px solid !important; */
   border-style: solid;
   cursor: pointer;
   /* transition: transform 0.2s; */
@@ -267,14 +269,11 @@ button {
   width: 100%;
 }
 
-
 /* Hover effect for buttons */
 .color-button:hover,
 .instrument-select-button:hover {
   transform: scale(1.05);
 }
-
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .eraser-container,
 .steps-group,
@@ -309,11 +308,6 @@ button {
 @media (max-height: 800px) {
   
 }
-/* 
-.grid-group {
-  margin-top: 13px;
-  margin-bottom: 0px;
-} */
 
 .play-group {
   margin-top: 10px;
@@ -360,30 +354,6 @@ button {
     box-shadow 0.6s cubic-bezier(0.42, 0, 0.58, 1); /* Smooth ease-out for shadow */
 }
 
-/* .edit-button {
-  margin-top: 10px;
-  width: 55px;
-  height: 55px;
-  border-radius: 30%;
-} */
-
-/* 33368f blue-ish */
-/* 9e273e red */
-/* 891515 dark red */
-/* b42d1a light red */
-
-/* .grid-button {
-  background-color: #9e273e;
-}
-
-.scale-button {
-  background-color: #9e273e;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} */
-
-
 .eraser-button.active, .trash-button.active, .edit-button.active
  {
   box-shadow: 
@@ -393,7 +363,7 @@ button {
     0 0 7px var(--shadowColor);
 }
 
-.edit-button.active {
+.edit-button.active, .trash-button.active {
   background-color: var(--buttonHoverColor);
   border-color: var(--shadowBorder);
 }
@@ -505,18 +475,21 @@ button {
 
 
 .play-stop-button {
-  background-color: var(--buttonColor);
+  background-color: var(--buttonColorPlay);
 }
 
 .stop-mode {
-  background-color: var(--popupButtonHover) !important;
+  background-color: var(--buttonColorStop) !important;
 }
 
 .play-stop-button:hover {
-  background-color: var(--buttonColor);
+  background-color: var(--buttonColorPlayHover);
 }
 
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+.stop-mode:hover {
+  background-color: var(--buttonColorStopHover) !important;
+}
+
 
 /* Instrument selection modal styling */
 .instrument-selection-modal {
@@ -594,21 +567,12 @@ button {
   color: white;
   border-radius: var(--smallButtonBorderRadius);
   border: None;
-  /* border-color: #310e15 !important; */
   cursor: pointer;
 }
 
 .close-modal-button:hover {
   background-color: var(--popupButtonHover3);
 }
-/* 
-.instrument-options-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  justify-content: center;
-  align-items: center; 
-} */
 
 .instrument-options-grid {
   display: grid;
@@ -634,8 +598,6 @@ button {
   text-align: center;
   /* font-weight: bold; */
 }
-
-/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .iconPlay,
 .iconDo,
@@ -799,8 +761,6 @@ button:hover .instrument-sidebar-icon {
   filter: drop-shadow(0 0 1px var(--shadowColor));
 }
 
-/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
 .vertical-sliders-1 {
   display: flex;
   gap: 10px;
@@ -849,7 +809,6 @@ button:hover .instrument-sidebar-icon {
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
-  /* border: 2px solid #333; */
 }
 
 .brush-size-group input[type="range"] {
@@ -863,7 +822,6 @@ button:hover .instrument-sidebar-icon {
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
-  /* border: 2px solid #333; */
 }
 
 @media (max-height: 800px) {
@@ -892,11 +850,7 @@ button:hover .instrument-sidebar-icon {
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
-  /* border: 2px solid #310e15; */
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor); */
   border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg);
@@ -919,11 +873,7 @@ button:hover .instrument-sidebar-icon {
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
-  /* border: 2px solid #310e15; */
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor); */
   border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg);
@@ -944,13 +894,7 @@ button:hover .instrument-sidebar-icon {
   background-image: url('./../../assets/icons/brush-svgrepo-com-2.svg');
   background-size: contain;
   background-repeat: no-repeat;
-  /* border: 2px solid #310e15; */
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor),
-    0 0 5px var(--shadowColor),
-    0 0 7px var(--shadowBorder); */
   border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
@@ -963,13 +907,7 @@ button:hover .instrument-sidebar-icon {
   background-image: url('./../../assets/icons/metronome-tempo-beat-bpm-svgrepo-com-3.svg');
   background-size: contain;
   background-repeat: no-repeat;
-  /* border: 2px solid #310e15; */
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor),
-    0 0 5px var(--shadowColor),
-    0 0 7px var(--shadowBorder); */
   border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
@@ -1018,9 +956,6 @@ button:hover .instrument-sidebar-icon {
   background-position: center;
   background-repeat: no-repeat;
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor); */
   border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg); /* Rotate the thumb to match the slider */
@@ -1044,11 +979,6 @@ button:hover .instrument-sidebar-icon {
   background-size: contain;
   background-repeat: no-repeat;
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor),
-    0 0 5px var(--shadowColor),
-    0 0 7px var(--shadowBorder); */
   border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
@@ -1098,9 +1028,6 @@ button:hover .instrument-sidebar-icon {
   background-position: center;
   background-repeat: no-repeat;
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor); */
   border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg); /* Rotate the thumb to match the slider */
@@ -1124,21 +1051,10 @@ button:hover .instrument-sidebar-icon {
   background-size: contain;
   background-repeat: no-repeat;
   border: var(--activeBorderWidth) solid var(--buttonColor);
-  /* box-shadow: 
-    0 0 5px var(--shadowBorder),
-    0 0 3px var(--shadowColor),
-    0 0 5px var(--shadowColor),
-    0 0 7px var(--shadowBorder); */
   border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
-/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* 
 
 /* Scale Selection Modal */
 .scale-selection-modal {
@@ -1247,11 +1163,6 @@ button:hover .instrument-sidebar-icon {
     /* 0 0 1px var(--shadowColor); */
 }
 
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-
 /* Overlay for the loading pop-up */
 .loading-popup {
   position: fixed;
@@ -1294,19 +1205,6 @@ button:hover .instrument-sidebar-icon {
   }
 }
 
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-/* .instrument-options-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  justify-items: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 50px;
-} */
-
 .instrument-option-cell {
   display: flex;
   flex-direction: column;
@@ -1342,8 +1240,6 @@ button:hover .instrument-sidebar-icon {
   color: var(--modalLabelTextColor);
   text-align: center;
 }
-
-
 
 .popup-overlay {
   position: fixed;
@@ -1448,7 +1344,7 @@ button:hover .instrument-sidebar-icon {
 
 .loading-spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: var(--blackColor);
+  border-left-color: var(--spinColor);
   border-radius: var(--circularBorderRadius);
   width: 24px;
   height: 24px;
@@ -1460,11 +1356,6 @@ button:hover .instrument-sidebar-icon {
     transform: rotate(360deg);
   }
 }
-
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 /* Pop-up overlay styling */
 .popup-overlay {
@@ -1606,8 +1497,8 @@ button:hover .instrument-sidebar-icon {
 .popup-buttons button {
   background-color: var(--popupButtonColor);
   border: var(--buttonBorderWidth) solid var(--popupButtonColor);
-  border-radius: var(--buttonBorderRadius);
-  padding: 12px 25px;
+  border-radius: var(--buttonBorderRadiusPopup);
+  padding: 12px 5px;
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--popupButtonTextColor);
@@ -1627,11 +1518,6 @@ button:hover .instrument-sidebar-icon {
     0 0 5px var(--shadowColor),
     0 0 7px var(--shadowColor);
 }
-
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
 
 .settings-selection-modal {
   position: fixed;
@@ -1681,11 +1567,6 @@ button:hover .instrument-sidebar-icon {
   color: var(--modalLabelTextColor);
   text-align: center;
 }
-
-
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .color-palette-modal {
   position: fixed;
@@ -1744,36 +1625,6 @@ button:hover .instrument-sidebar-icon {
   border-radius: var(--closeButtonBorderRadius);
   cursor: pointer;
 }
-
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-/* ////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-/* .combined-selection-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--menuColor);
-  padding: 20px;
-  border-radius: var(--modalBorderRadius);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  max-width: 350px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  overflow-y: auto; 
-  font-family: 'Roboto', sans-serif;
-}
-
-.instrument-label {
-  text-align: center;
-  font-size: 12px;
-  margin-top: 5px;
-} */
-
 
 .combined-selection-modal {
   position: fixed;
