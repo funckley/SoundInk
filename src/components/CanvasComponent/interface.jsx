@@ -1553,8 +1553,8 @@ const CanvasComponent = () => {
               Save as Audio
             </label>
             {saveAudio && (
-              <div style={{ marginLeft: '24px', marginTop: '8px' }}>
-                <label style={{ fontSize: '0.9em', color: '#666' }}>
+              <div className="popup-audio-loops">
+                <label>
                   Loops: {audioLoops}
                   <input
                     type="range"
@@ -1562,7 +1562,7 @@ const CanvasComponent = () => {
                     max="10"
                     value={audioLoops}
                     onChange={(e) => setAudioLoops(Number(e.target.value))}
-                    style={{ width: '100%', marginTop: '4px' }}
+                    className="popup-range-slider"
                   />
                 </label>
               </div>

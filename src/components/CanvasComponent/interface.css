@@ -13,27 +13,80 @@
 
 :root {
   /* Canvas color variables - change these to customize your canvas theme */
-  --canvasColor: #b8b8b8; /* Current active canvas color (dynamically updated by JS) */
-  --defaultCanvasColor: #dddddd; /* Default canvas background color */
-  --editmodeColor: #bdc8cf; /* Edit mode canvas background color */
-  --eraserColor: #b8b8b8; /* Eraser color (should be close to canvas color) */
+  --canvasColor: #dfdfdf; /* Current active canvas color (dynamically updated by JS) */
+  --defaultCanvasColor: #ededed; /* Default canvas background color */
+  --editmodeColor: #cbcbcb; /* Edit mode canvas background color */
+  --eraserColor: #ededed; /* Eraser color (should be close to canvas color) */
   
   /* Grid dot color variables - change these to customize grid appearance */
-  --gridDotColor: #b8b8b855; /* Default grid dot color */
-  --gridScannedDotColor: #c4c4c455; /* Color when playback cursor passes over dots */
-  --gridErasedDotColor: #c4c4c455; /* Color for erased dots */
+  --gridDotColor: #98989866; /* Default grid dot color */
+  --gridScannedDotColor: #98989866; /* Color when playback cursor passes over dots */
+  --gridErasedDotColor: #98989866; /* Color for erased dots */
   
   /* UI color variables */
   --sideBarColor: #747474; 
-  --buttonColor: #404040;
+  --buttonColor: #2b2b2b;
   --buttonHoverColor: #5a5a5a;
   --shadowBorder: #be8c45;
   --sliderColor: #4747479d;
   --shadowColor: #dedede;
-  --menuButtonColor: #656565;
+  --menuButtonColor: #2b2b2b;
   --menuColor: #808080;
   --menuTextColor: #2E2E2E;
-  --settingButtonColor: #5c5c5c;
+  
+  /* Popup and dialog colors */
+  --popupBackgroundColor: #525252; /* Popup background color */
+  --popupButtonColor: #901e29; /* Primary popup button background */
+  --popupButtonHover: #9c1825; /* Popup button hover state */
+  --popupButtonHover2: #9e2424; /* Secondary popup button hover */
+  --popupButtonHover3: #c32b2b; /* Tertiary popup button hover */
+  --popupButtonDark: #891515; /* Dark popup button variant */
+  --popupButtonTextColor: #ffd500; /* Popup button text color */
+  --popupHeaderColor: #ffffff; /* Popup title/header text color */
+  --popupTextColor: #dcdcdc; /* Popup main text color */
+  --popupLabelColor: #e8e8e8; /* Popup checkbox/form label color */
+  --popupBorderColor: #838383; /* Popup border color */
+  
+  /* Modal text colors - for consistent theming across all popups */
+  --modalHeaderTextColor: #ffffff; /* Modal titles/headings */
+  --modalBodyTextColor: #dcdcdc; /* Modal main text content */
+  --modalLabelTextColor: #e8e8e8; /* Modal labels and small text */
+  --modalLoadingTextColor: #ffffff; /* Loading popup text */
+  
+  /* General interface colors */
+  --errorColor: #ff0000; /* Error/warning indicator */
+  --darkButtonColor: #9e273e; /* Dark button variant */
+  --textColor: #333; /* General text color */
+  --lightBackground: #ddd; /* Light background */
+  --lightBackground2: #ccc; /* Lighter background variant */
+  --blackColor: #000; /* Pure black */
+  --settingButtonColor: #2b2b2b;
+  
+  /* Button styling variables - change these to customize button appearance */
+  --buttonBorderRadius: 13%; /* Main button corner roundness */
+  --buttonBorderWidth: 2px; /* Main button border thickness */
+  --buttonFontSize: 1.8em; /* Button text/icon size */
+  --buttonPadding: 0px; /* Button internal spacing */
+  
+  /* Component styling variables */
+  --modalBorderRadius: 5px; /* Modal/popup corner roundness */
+  --modalPadding: 20px; /* Modal internal spacing */
+  --sliderBorderRadius: 2px; /* Slider track corner roundness */
+  --sliderThumbBorderRadius: 13%; /* Slider thumb corner roundness */
+  --containerBorderWidth: 3px; /* Container border thickness */
+  --containerPadding: 20px; /* Container internal spacing */
+  
+  /* Interactive element styling */
+  --activeBorderWidth: 1px; /* Border thickness for active/hover states */
+  --smallButtonBorderRadius: 13%; /* Corner roundness for small buttons */
+  --circularBorderRadius: 50%; /* Perfect circles (sliders, etc.) */
+  
+  /* Color picker and popup specific styling */
+  --colorOptionBorderRadius: 13%; /* Corner roundness for color picker squares */
+  --loadingContentBorderRadius: 2px; /* Corner roundness for loading/popup content */
+  --closeButtonBorderRadius: 5%; /* Corner roundness for close buttons */
+  --popupContentBorderRadius: 2px; /* Corner roundness for popup dialogs */
+  --popupButtonBorderRadius: 2px; /* Corner roundness for popup buttons */
 }
 
 html, body {
@@ -66,7 +119,7 @@ html, body {
   margin-left: 0px;
   height: 100%;
   max-width: 110px;
-  padding: 20px 20px;
+  padding: var(--containerPadding) var(--containerPadding);
   background: linear-gradient(90deg, var(--sideBarColor) 0%, var(--sideBarColor) 100%);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   /* box-sizing: border-box; */
@@ -75,7 +128,7 @@ html, body {
   align-items: center;
   gap: 20px;
   /* overflow-y: auto; */
-  border: 3px solid var(--sideBarColor);
+  border: var(--containerBorderWidth) solid var(--sideBarColor);
   z-index: 1;
 }
 
@@ -109,7 +162,7 @@ html, body {
 }
 
 /* .canvas-container.edit-mode-active {
-  background-color: #ff0000;
+  background-color: var(--errorColor);
 } */
 
 /* SVG Drawing Area */
@@ -159,7 +212,7 @@ button {
   width: 75px !important;
   height: 75px !important;
   aspect-ratio: 1 / 1;
-  border-radius: 30% !important;
+  border-radius: var(--buttonBorderRadius) !important;
   /* border: 2px solid var(--buttonColor); */
   /* border: 7px solid !important; */
   border-style: solid;
@@ -288,12 +341,12 @@ button {
 .scale-button {
   width: 10vw;
   /* height: 0%; */
-  padding: 0px;
+  padding: var(--buttonPadding);
   margin: 0 auto;
-  border: 2px solid var(--buttonColor);
+  border: var(--buttonBorderWidth) solid var(--buttonColor);
   /* border: None; */
-  border-radius: 30%;
-  font-size: 1.8em;
+  border-radius: var(--buttonBorderRadius);
+  font-size: var(--buttonFontSize);
   cursor: pointer;
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   transition: transform 0.2s, background-color 0.2s;
@@ -426,12 +479,12 @@ button {
   margin-top: 0px;
   width: 75px;
   /* height: 0%; */
-  padding: 0px;
+  padding: var(--buttonPadding);
   margin: 0 auto;
-  border: 2px solid var(--buttonColor);
+  border: var(--buttonBorderWidth) solid var(--buttonColor);
   /* border: None; */
-  border-radius: 30%;
-  font-size: 1.8em;
+  border-radius: var(--buttonBorderRadius);
+  font-size: var(--buttonFontSize);
   cursor: pointer;
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   transition: transform 0.2s, background-color 0.2s;
@@ -456,7 +509,7 @@ button {
 }
 
 .stop-mode {
-  background-color: #9c1825 !important;
+  background-color: var(--popupButtonHover) !important;
 }
 
 .play-stop-button:hover {
@@ -473,8 +526,8 @@ button {
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
   /* border: 2px solid #333; */
-  padding: 20px;
-  border-radius: 25px;
+  padding: var(--modalPadding);
+  border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   max-width: 350px;
@@ -491,7 +544,7 @@ button {
   margin-bottom: 10px;
   font-size: 18px;
   text-align: center;
-  color: #333;
+  color: var(--modalHeaderTextColor);
 }
 
 .instrument-options {
@@ -507,8 +560,8 @@ button {
   height: 80px;
   /* Adjust button size */
   background-color: var(--menuButtonColor);
-  border: 2px solid var(--menuButtonColor);
-  border-radius: 30%;
+  border: var(--buttonBorderWidth) solid var(--menuButtonColor);
+  border-radius: var(--buttonBorderRadius);
   /* border-radius: 20%; */
   cursor: pointer;
   transition: background-color 0.2s;
@@ -522,7 +575,7 @@ button {
 }
 
 .instrument-option-button:hover {
-  background-color: #9c1825;
+  background-color: var(--popupButtonHover);
   transform: scale(1.05);
   border: 1px solid var(--shadowBorder);
   box-shadow: 
@@ -537,16 +590,16 @@ button {
   height: 60px;
   margin-top: 45px;
   padding: 18px 18px;
-  background-color: #9e2424;
+  background-color: var(--popupButtonHover2);
   color: white;
-  border-radius: 15%;
+  border-radius: var(--smallButtonBorderRadius);
   border: None;
   /* border-color: #310e15 !important; */
   cursor: pointer;
 }
 
 .close-modal-button:hover {
-  background-color: #c32b2b;
+  background-color: var(--popupButtonHover3);
 }
 /* 
 .instrument-options-grid {
@@ -577,7 +630,7 @@ button {
 
 .instrument-label {
   font-size: 0.9em;
-  color: var(--menuTextColor); /* Match the theme color */
+  color: var(--modalLabelTextColor); /* Match the theme color */
   text-align: center;
   /* font-weight: bold; */
 }
@@ -792,7 +845,7 @@ button:hover .instrument-sidebar-icon {
   height: 40px;
   max-width: 8em;
   background: var(--sliderColor);
-  border-radius: 11px;
+  border-radius: var(--sliderBorderRadius);
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
@@ -806,7 +859,7 @@ button:hover .instrument-sidebar-icon {
   height: 40px;
   max-width: 8em;
   background: var(--sliderColor);
-  border-radius: 11px;
+  border-radius: var(--sliderBorderRadius);
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
@@ -840,11 +893,11 @@ button:hover .instrument-sidebar-icon {
   background-position: center;
   background-repeat: no-repeat;
   /* border: 2px solid #310e15; */
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor); */
-  border-radius: 25%;
+  border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg);
   transition: background-color 0.3s;
@@ -867,11 +920,11 @@ button:hover .instrument-sidebar-icon {
   background-position: center;
   background-repeat: no-repeat;
   /* border: 2px solid #310e15; */
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor); */
-  border-radius: 25%;
+  border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg);
   transition: background-color 0.3s;
@@ -892,13 +945,13 @@ button:hover .instrument-sidebar-icon {
   background-size: contain;
   background-repeat: no-repeat;
   /* border: 2px solid #310e15; */
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor),
     0 0 5px var(--shadowColor),
     0 0 7px var(--shadowBorder); */
-  border-radius: 50%;
+  border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -911,13 +964,13 @@ button:hover .instrument-sidebar-icon {
   background-size: contain;
   background-repeat: no-repeat;
   /* border: 2px solid #310e15; */
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor),
     0 0 5px var(--shadowColor),
     0 0 7px var(--shadowBorder); */
-  border-radius: 50%;
+  border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -947,7 +1000,7 @@ button:hover .instrument-sidebar-icon {
   height: 40px;
   max-width: 8em;
   background: var(--sliderColor);
-  border-radius: 11px;
+  border-radius: var(--sliderBorderRadius);
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg); /* Vertical orientation */
@@ -964,11 +1017,11 @@ button:hover .instrument-sidebar-icon {
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor); */
-  border-radius: 25%;
+  border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg); /* Rotate the thumb to match the slider */
   transition: background-color 0.3s;
@@ -990,13 +1043,13 @@ button:hover .instrument-sidebar-icon {
   background-image: url('./../../assets/icons/ruler-svgrepo-com.svg'); /* Replace with your grid icon */
   background-size: contain;
   background-repeat: no-repeat;
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor),
     0 0 5px var(--shadowColor),
     0 0 7px var(--shadowBorder); */
-  border-radius: 50%;
+  border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -1027,7 +1080,7 @@ button:hover .instrument-sidebar-icon {
   height: 40px;
   max-width: 8em;
   background: var(--sliderColor);
-  border-radius: 11px;
+  border-radius: var(--sliderBorderRadius);
   outline: none;
   cursor: pointer;
   transform: rotate(-90deg); /* Vertical orientation */
@@ -1044,11 +1097,11 @@ button:hover .instrument-sidebar-icon {
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor); */
-  border-radius: 25%;
+  border-radius: var(--sliderThumbBorderRadius);
   cursor: pointer;
   transform: rotate(90deg); /* Rotate the thumb to match the slider */
   transition: background-color 0.3s;
@@ -1070,13 +1123,13 @@ button:hover .instrument-sidebar-icon {
   background-image: url('./../../assets/icons/audio-music-on-song-sound-speaker-svgrepo-com-2.svg'); /* Replace with your grid icon */
   background-size: contain;
   background-repeat: no-repeat;
-  border: 1px solid var(--buttonColor);
+  border: var(--activeBorderWidth) solid var(--buttonColor);
   /* box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor),
     0 0 5px var(--shadowColor),
     0 0 7px var(--shadowBorder); */
-  border-radius: 50%;
+  border-radius: var(--circularBorderRadius);
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -1094,9 +1147,9 @@ button:hover .instrument-sidebar-icon {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
-  border: 2px solid var(--menuColor);
+  border: var(--buttonBorderWidth) solid var(--menuColor);
   padding: 40px;
-  border-radius: 25px;
+  border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   max-width: 350px; /* Adjust to fit within the screen */
@@ -1140,15 +1193,15 @@ button:hover .instrument-sidebar-icon {
   font-size: 14px;
   /* font-weight: bold; */
   margin-top: 8px;
-  color: var(--shadowColor);
+  color: var(--modalLabelTextColor);
   text-align: center;
 }
 
 .scale-option-button {
   background: transparent;
   background-color: var(--menuButtonColor);
-  border: 2px solid var(--menuButtonColor);
-  border-radius: 30%;
+  border: var(--buttonBorderWidth) solid var(--menuButtonColor);
+  border-radius: var(--buttonBorderRadius);
   padding: 10px;
   cursor: pointer;
   transition: 
@@ -1158,7 +1211,7 @@ button:hover .instrument-sidebar-icon {
 }
 
 .scale-option-button:hover {
-  background-color: #891515;
+  background-color: var(--popupButtonDark);
   transform: scale(1.05);
 }
 
@@ -1187,7 +1240,7 @@ button:hover .instrument-sidebar-icon {
 .scale-label,
 .settings-label {
   font-size: 1em;
-  color: var(--menuTextColor); /* Adjust color to fit the theme */
+  color: var(--modalLabelTextColor); /* Adjust color to fit the theme */
   /* font-weight: bold; */
   /* text-shadow:  */
     /* 0 0 10px var(--shadowBorder), */
@@ -1216,12 +1269,12 @@ button:hover .instrument-sidebar-icon {
 /* Content inside the loading pop-up */
 .loading-content {
   text-align: center;
-  background: var(--buttonColor);
+  background: var(--popupBackgroundColor);
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: var(--loadingContentBorderRadius);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  font-family: Arial, sans-serif;
-  color: var(--shadowColor);
+  font-family: 'Arial', sans-serif;
+  color: var(--modalLoadingTextColor);
 }
 
 /* Loading spinner (simple animation) */
@@ -1267,7 +1320,7 @@ button:hover .instrument-sidebar-icon {
   left: 5px;
   width: 40px;
   height: 40px;
-  background-color: #9e2424;
+  background-color: var(--popupButtonHover2);
   color: white;
   border-radius: 50%;
   border: none;
@@ -1279,14 +1332,14 @@ button:hover .instrument-sidebar-icon {
 }
 
 .close-modal-button:hover {
-  background-color: #c32b2b;
+  background-color: var(--popupButtonHover3);
 }
 
 .instrument-label {
   font-size: 14px;
   /* font-weight: bold; */
   margin-top: 8px;
-  color: var(--menuTextColor);
+  color: var(--modalLabelTextColor);
   text-align: center;
 }
 
@@ -1306,10 +1359,12 @@ button:hover .instrument-sidebar-icon {
 }
 
 .popup-content {
-  background: white;
+  background: var(--popupBackgroundColor);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: var(--popupContentBorderRadius);
   text-align: center;
+  color: var(--popupTextColor);
+  font-family: 'Arial', sans-serif;
 }
 
 .popup-buttons {
@@ -1321,12 +1376,12 @@ button:hover .instrument-sidebar-icon {
 .popup-buttons button {
   padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--popupButtonBorderRadius);
   cursor: pointer;
 }
 
 .popup-buttons button:hover {
-  background: #ddd;
+  background: var(--lightBackground);
 }
 
 .popup-overlay {
@@ -1343,10 +1398,12 @@ button:hover .instrument-sidebar-icon {
 }
 
 .popup-content {
-  background: white;
+  background: var(--popupBackgroundColor);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: var(--popupContentBorderRadius);
   text-align: center;
+  color: var(--popupTextColor);
+  font-family: 'Arial', sans-serif;
 }
 
 .popup-buttons {
@@ -1358,12 +1415,12 @@ button:hover .instrument-sidebar-icon {
 .popup-buttons button {
   padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--popupButtonBorderRadius);
   cursor: pointer;
 }
 
 .popup-buttons button:hover {
-  background: #ddd;
+  background: var(--lightBackground);
 }
 
 .loading-overlay {
@@ -1380,16 +1437,19 @@ button:hover .instrument-sidebar-icon {
 }
 
 .loading-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
   text-align: center;
+  background: var(--popupBackgroundColor);
+  padding: 20px;
+  border-radius: var(--closeButtonBorderRadius);
+  text-align: center;
+  color: var(--modalLoadingTextColor);
+  font-family: 'Arial', sans-serif;
 }
 
 .loading-spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #000;
-  border-radius: 50%;
+  border-left-color: var(--blackColor);
+  border-radius: var(--circularBorderRadius);
   width: 24px;
   height: 24px;
   animation: spin 1s linear infinite;
@@ -1422,64 +1482,145 @@ button:hover .instrument-sidebar-icon {
 
 /* Pop-up content styling */
 .popup-content {
-  background: var(--buttonColor);
-  padding: 20px;
-  border-radius: 15px;
+  background: var(--popupBackgroundColor);
+  padding: 25px;
+  border-radius: var(--loadingContentBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1001;
-  max-width: 350px;
+  max-width: 380px;
+  min-width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  color: #ffd500;
+  gap: 15px;
+  color: var(--popupTextColor);
+  font-family: 'Arial', sans-serif;
 }
 
 .popup-content h2 {
-  margin-bottom: 10px;
-  font-size: 18px;
+  margin-bottom: 15px;
+  font-size: 20px;
   text-align: center;
-  color: #ffd500;
+  color: var(--popupHeaderColor);
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
 }
 
 .popup-content p {
   text-align: center;
-  color: #ffd500;
+  color: var(--popupTextColor);
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.4;
 }
 
 .popup-checkboxes {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 25px;
+  width: 100%;
 }
 
 .popup-checkboxes label {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--menuTextColor);
+  color: var(--popupLabelColor);
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  font-weight: normal;
+}
+
+.popup-checkboxes input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--popupButtonColor);
+  cursor: pointer;
+}
+
+.popup-audio-loops {
+  margin-left: 20px;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--sliderBorderRadius);
+  width: calc(100% - 40px);
+}
+
+.popup-audio-loops label {
+  font-size: 16px;
+  color: var(--popupLabelColor);
+  display: block;
+  font-weight: normal;
+  margin-bottom: 5px;
+  font-family: 'Arial', sans-serif;
+}
+
+.popup-range-slider {
+  width: 100%;
+  margin-top: 10px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--sliderColor);
+  border-radius: var(--sliderBorderRadius);
+  outline: none;
+  cursor: pointer;
+}
+
+.popup-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background-color: var(--popupButtonColor);
+  border: 1px solid var(--shadowBorder);
+  border-radius: var(--circularBorderRadius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-range-slider::-webkit-slider-thumb:hover {
+  background-color: var(--popupButtonHover);
+  transform: scale(1.1);
+}
+
+.popup-range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background-color: var(--popupButtonColor);
+  border: 1px solid var(--shadowBorder);
+  border-radius: var(--circularBorderRadius);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .popup-buttons {
   display: flex;
-  gap: 20px;
+  gap: 25px;
+  margin-top: 10px;
 }
 
 .popup-buttons button {
-  background-color: #901e29;
-  border: 2px solid #901e29;
-  border-radius: 30%;
-  padding: 10px 20px;
+  background-color: var(--popupButtonColor);
+  border: var(--buttonBorderWidth) solid var(--popupButtonColor);
+  border-radius: var(--buttonBorderRadius);
+  padding: 12px 25px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  color: #ffd500;
+  transition: all 0.2s ease;
+  color: var(--popupButtonTextColor);
+  font-size: 16px;
+  font-weight: bold;
+  min-width: 80px;
+  font-family: 'Arial', sans-serif;
 }
 
 .popup-buttons button:hover {
-  background-color: #9c1825;
+  background-color: var(--popupButtonHover);
   transform: scale(1.05);
-  border: 1px solid var(--shadowBorder);
+  border: var(--activeBorderWidth) solid var(--shadowBorder);
   box-shadow: 
     0 0 5px var(--shadowBorder),
     0 0 3px var(--shadowColor),
@@ -1498,9 +1639,9 @@ button:hover .instrument-sidebar-icon {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
-  border: 2px solid var(--menuColor);
+  border: var(--buttonBorderWidth) solid var(--menuColor);
   padding: 50px;
-  border-radius: 25px;
+  border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   height: 100px;
@@ -1537,7 +1678,7 @@ button:hover .instrument-sidebar-icon {
   font-size: 14px;
   /* font-weight: bold; */
   margin-top: 8px;
-  color: var(--menuTextColor);
+  color: var(--modalLabelTextColor);
   text-align: center;
 }
 
@@ -1552,9 +1693,9 @@ button:hover .instrument-sidebar-icon {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
-  padding: 20px;
+  padding: var(--modalPadding);
   border: None;
-  border-radius: 25px;
+  border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   max-width: 950px;
@@ -1568,8 +1709,8 @@ button:hover .instrument-sidebar-icon {
 
 .color-palette {
   background-color: var(--menuColor);
-  padding: 20px;
-  border-radius: 25px;
+  padding: var(--modalPadding);
+  border-radius: var(--modalBorderRadius);
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
   z-index: 1000;
   max-width: 950px;
@@ -1586,8 +1727,8 @@ button:hover .instrument-sidebar-icon {
 .color-option {
   width: 50px;
   height: 50px;
-  border: 0px solid #838383;
-  border-radius: 25%;
+  border: 0px solid var(--popupBorderColor);
+  border-radius: var(--colorOptionBorderRadius);
   cursor: pointer;
 }
 
@@ -1598,9 +1739,9 @@ button:hover .instrument-sidebar-icon {
 .close-palette-button {
   margin-top: 10px;
   padding: 5px 10px;
-  background-color: #ccc;
+  background-color: var(--lightBackground2);
   border: none;
-  border-radius: 5px;
+  border-radius: var(--closeButtonBorderRadius);
   cursor: pointer;
 }
 
@@ -1615,7 +1756,7 @@ button:hover .instrument-sidebar-icon {
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
   padding: 20px;
-  border-radius: 25px;
+  border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   max-width: 350px;
@@ -1641,7 +1782,7 @@ button:hover .instrument-sidebar-icon {
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
   padding: 50px;
-  border-radius: 25px;
+  border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   max-width: 650px; /* Adjust width as needed */
@@ -1670,8 +1811,8 @@ button:hover .instrument-sidebar-icon {
 .color-option {
   width: 60px;
   height: 60px;
-  border: 0px solid #838383;
-  border-radius: 25%;
+  border: 0px solid var(--popupBorderColor);
+  border-radius: var(--colorOptionBorderRadius);
   cursor: pointer;
 }
 
@@ -1683,8 +1824,8 @@ button:hover .instrument-sidebar-icon {
   width: 60px;
   height: 60px;
   background-color: var(--menuButtonColor);
-  border: 2px solid var(--menuButtonColor);
-  border-radius: 30%;
+  border: var(--buttonBorderWidth) solid var(--menuButtonColor);
+  border-radius: var(--buttonBorderRadius);
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
@@ -1693,7 +1834,7 @@ button:hover .instrument-sidebar-icon {
 }
 
 .instrument-option-button:hover {
-  background-color: #9c1825;
+  background-color: var(--popupButtonHover);
   transform: scale(1.05);
 }
 
@@ -1701,5 +1842,6 @@ button:hover .instrument-sidebar-icon {
   text-align: center;
   font-size: 12px;
   margin-top: 1px;
+  color: var(--modalLabelTextColor);
 }
 
