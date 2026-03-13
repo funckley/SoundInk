@@ -665,6 +665,7 @@ button[data-tooltip] {
 .noLoop,
 .iconGrid,
 .iconGear,
+.iconSettings,
 .iconClean,
 .iconTempo,
 .iconEraser,
@@ -1632,6 +1633,42 @@ button:hover .instrument-sidebar-icon {
   margin-top: 8px;
   color: var(--modalLabelTextColor);
   text-align: center;
+}
+
+/* Circular settings button positioned at bottom-right of canvas */
+.circle-settings-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  border-radius: var(--circularBorderRadius);
+  background-color: var(--buttonColor);
+  border: 2px solid var(--buttonColor);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.circle-settings-button:hover {
+  background-color: var(--buttonHoverColor);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.circle-settings-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.circle-settings-button .iconGear {
+  width: 24px;
+  height: 24px;
+  filter: var(--iconFilter);
 }
 
 .color-palette-modal {

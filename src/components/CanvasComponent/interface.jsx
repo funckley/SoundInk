@@ -1646,7 +1646,7 @@ const CanvasComponent = () => {
               <button
                 className="instrument-select-button"
                 onClick={() => openInstrumentMenu(slot)}
-                data-tooltip="Brush Settings"
+                data-tooltip="Brush Setting"
               >
                 <img src={GearIcon} alt="Settings Button" className="iconGear" />
               </button>
@@ -1913,6 +1913,15 @@ const CanvasComponent = () => {
           {allStrokes}
           {currentLine.length > 0 && <path d={currentStroke} fill={colorSlots[currentColor]} />}
         </svg>
+
+        {/* Circular Settings Button */}
+        <button 
+          className="circle-settings-button"
+          onClick={handleSettingsButtonClick}
+          data-tooltip="Settings"
+        >
+          <img src={GearIcon} alt="Settings" className="iconSettings" />
+        </button>
       </div>
 
       {isSettingsMenuOpen && (
