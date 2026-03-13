@@ -14,12 +14,12 @@
 :root {
   /* Canvas color variables - change these to customize your canvas theme */
   --canvasColor: #dfdfdf; /* Current active canvas color (dynamically updated by JS) */
-  --defaultCanvasColor: #ededed; /* Default canvas background color */
-  --editmodeColor: #cbcbcb; /* Edit mode canvas background color */
+  --defaultCanvasColor: #e7b8af3e; /* Default canvas background color */
+  --editmodeColor: #dac66379; /* Edit mode canvas background color */
   --eraserColor: #ededed; /* Eraser color (should be close to canvas color) */
   
   /* Grid dot color variables - change these to customize grid appearance */
-  --gridDotColor: #98989866; /* Default grid dot color */
+  --gridDotColor: #e7b8af68; /* Default grid dot color */
   --gridScannedDotColor: #98989866; /* Color when playback cursor passes over dots */
   --gridErasedDotColor: #98989866; /* Color for erased dots */
   
@@ -30,7 +30,7 @@
   --buttonColorPlayHover: #ebd773;
   --buttonColorStop: #E06C4A;
   --buttonColorStopHover: #ee8869;
-  --buttonHoverColor: #DAC663;
+  --buttonHoverColor: #E06C4A;
   --shadowBorder: #E7B6AF;
   --sliderColor: #DAC663;
   --shadowColor: #dedede;
@@ -637,7 +637,7 @@ button {
 }
 
 .iconEdit {
-  transform: scale(0.5);
+  transform: scale(0.6);
 }
 
 .iconGrid {
@@ -663,6 +663,10 @@ button {
 
 .scale-option-icon {
   transform: scale(1);
+}
+
+.scale-icon {
+  transform: scale(0.85);
 }
 
 .iconDown, .iconUp {
@@ -1695,4 +1699,3 @@ button:hover .instrument-sidebar-icon {
   margin-top: 1px;
   color: var(--modalLabelTextColor);
 }
-
