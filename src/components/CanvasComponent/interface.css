@@ -92,6 +92,58 @@
   --closeButtonBorderRadius: 5%; /* Corner roundness for close buttons */
   --popupContentBorderRadius: 3%; /* Corner roundness for popup dialogs */
   --popupButtonBorderRadius: 25%; /* Corner roundness for popup buttons */
+  
+  /* Tooltip variables */
+  --tooltipBackground: rgba(0, 0, 0, 0.8);
+  --tooltipText: #ffffff;
+  --tooltipBorder: rgba(255, 255, 255, 0.2);
+  --tooltipFontSize: 12px;
+}
+
+/* Tooltip system using CSS pseudo-elements */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%; /* Move it slightly higher */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--tooltipBackground);
+  color: var(--tooltipText);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: var(--tooltipFontSize);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+  z-index: 10000; /* Higher z-index */
+  border: 1px solid var(--tooltipBorder);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-tooltip]::after {
+  content: "";
+  position: absolute;
+  bottom: 110%; /* Adjust arrow position */
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--tooltipBackground);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 10000; /* Higher z-index */
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 
 html, body {
@@ -118,7 +170,7 @@ html, body {
   position: relative;
   left: 0;
   top: 0;
-  overflow: hidden;
+  overflow: visible; /* Allow tooltips to show outside container */
   overflow-y: hidden;
   margin-top: 0px;
   margin-left: 0px;
@@ -205,6 +257,11 @@ button {
   transition: all 0.3s ease;
   font-size: 1.8em;
   /* aspect-ratio: 1 / 1; */
+}
+
+/* Allow tooltips to show on buttons with data-tooltip */
+button[data-tooltip] {
+  overflow: visible;
 }
 
 .color-button {
@@ -373,6 +430,8 @@ button {
 .undo:hover, .redo:hover,
 .play-stop-button:hover,
 .loop-button:hover,
+.save-button:hover,
+.load-button:hover,
 .grid-button:hover,
 .clean-button:hover,
 .settings-button:hover,
@@ -675,6 +734,9 @@ button {
 
 button:hover .iconStop, button.active .iconStop, .iconStop,
 button:hover .iconDo,
+button:hover .iconUp, button.active .iconUp,
+button:hover .iconDown, button.active .iconDown,
+button:hover .iconEdit, button.active .iconEdit,
 button:hover .iconGrid,
 button:hover .iconGear,
 button:hover .iconClean,

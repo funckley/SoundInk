@@ -1599,6 +1599,7 @@ const CanvasComponent = () => {
           <button
             ref={playStopButtonRef} // Add a ref here
             className={`play-stop-button ${isPlaying ? 'stop-mode' : 'play-mode'}`}
+            data-tooltip="Playback"
             onClick={() => {
               if (isPlaying) {
                 playbackStopped.current = true;
@@ -1621,6 +1622,7 @@ const CanvasComponent = () => {
               {/* Color button */}
               <button
                 className={`color-button ${currentColor === slot ? 'active' : ''}`}
+                data-tooltip="Select Brush"
                 // style={{ backgroundColor: colorSlots[slot], position: 'relative' }} // Add relative positioning
                 // style={{ backgroundColor: colorSlots[slot], borderColor: colorSlots[slot] }}
                 style={{ borderColor: colorSlots[slot], border: `7px solid ${colorSlots[slot]}` }}
@@ -1644,6 +1646,7 @@ const CanvasComponent = () => {
               <button
                 className="instrument-select-button"
                 onClick={() => openInstrumentMenu(slot)}
+                data-tooltip="Brush Settings"
               >
                 <img src={GearIcon} alt="Settings Button" className="iconGear" />
               </button>
@@ -1686,12 +1689,14 @@ const CanvasComponent = () => {
           <button
             className={`edit-button ${isEditMode ? 'active' : ''}`}
             onClick={() => setIsEditMode(!isEditMode)} // Toggle Edit Mode
+            data-tooltip="Edit Mode"
           >
             <img src={EditIcon} alt="Edit" className="iconEdit" />
           </button>
 
           <button
             className={`trash-button ${isTrash ? 'active' : ''}`}
+            data-tooltip="Erase Line"
             // onClick={() => setIsTrash(!isTrash)}
             onClick={() => {
               if (isTrash) {
@@ -1730,6 +1735,7 @@ const CanvasComponent = () => {
             <input
               id="volume-slider"
               type="range"
+              data-tooltip="Volume"
               min="0"
               max="1"
               step="0.01"
@@ -1745,6 +1751,7 @@ const CanvasComponent = () => {
             <input
               id="bpm"
               type="range"
+              data-tooltip="Tempo"
               min="60" // Slowest tempo
               max="400" // Fastest tempo
               step="5" // Increment for each slider step
@@ -1765,6 +1772,7 @@ const CanvasComponent = () => {
             <input
               id="grid-slider"
               type="range"
+              data-tooltip="Musical Meter"
               min="0"
               max={gridConfigurations.length - 1}
               step="1"
@@ -1775,6 +1783,7 @@ const CanvasComponent = () => {
           <div className="brush-size-group">
             <input
               type="range"
+              data-tooltip="Brush Size"
               min="1"
               max="50"
               step="1"
@@ -1789,6 +1798,7 @@ const CanvasComponent = () => {
           <button
             className={`loop-button ${loop ? 'active' : 'inactive'}`}
             onClick={() => setLoop(!loop)}
+            data-tooltip="Loop ON/OFF"
           >
             <img
               src={loop ? LoopIcon : NoLoopIcon}
@@ -1799,6 +1809,7 @@ const CanvasComponent = () => {
           <button
             className="scale-button"
             onClick={() => setIsScaleMenuOpen(true)} // Open the pop-up
+            data-tooltip="Musical Mode"
           >
             <img
               src={scaleIcons[currentScale]}
@@ -1810,31 +1821,31 @@ const CanvasComponent = () => {
 
         {/* Undo and Redo Buttons */}
         <div className="steps-group">
-          <button className="undo" onClick={handleUndo}>
+          <button className="undo" onClick={handleUndo} data-tooltip="Undo">
             <img src={UndoIcon} alt="Undo" className="iconDo" />
           </button>
-          <button className="redo" onClick={handleRedo}>
+          <button className="redo" onClick={handleRedo} data-tooltip="Redo">
             <img src={RedoIcon} alt="Redo" className="iconDo" />
           </button>
         </div>
 
         {/* Toggle Grid Visibility Button */}
         <div className="grid-group">
-          <button className="grid-button" onClick={toggleGrid}>
+          <button className="grid-button" onClick={toggleGrid} data-tooltip="Grid ON/OFF">
             <img src={GridIcon} alt="Grid Icon" className="iconGrid" />
           </button>
 
-          <button className="clean-button" onClick={handleClearScreen}>
+          <button className="clean-button" onClick={handleClearScreen} data-tooltip="Clean Canvas">
             <img src={CleanIcon} alt="Clean Icon" className="iconClean" />
           </button>
 
         </div>
 
         <div className="load-save-group">
-          <button className="save-button" onClick={handleSaveDrawing}>
+          <button className="save-button" onClick={handleSaveDrawing} data-tooltip="Export">
             <img src={downloadIcon} alt="Download Icon" className="iconDown" />
           </button>
-          <button className="load-button" onClick={() => loadInputRef.click()}>
+          <button className="load-button" onClick={() => loadInputRef.click()} data-tooltip="Import">
             <img src={uploadIcon} alt="Upload Icon" className="iconUp" />
           </button>
         </div>
