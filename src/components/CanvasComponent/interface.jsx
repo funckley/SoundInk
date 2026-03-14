@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, createContext, useCont
 import './interface.css'; // Importing the associated CSS file for styles
 import { PlayIcon, StopIcon, UndoIcon, RedoIcon, BrushIcon, EraseIcon, LoopIcon, TempoIcon, GridIcon, GearIcon, TrashIcon, quitIcon, NoLoopIcon, downloadIcon, uploadIcon, CleanIcon, muteIcon, bassIcon, guitarIcon, marimbaIcon, pianoIcon, violinIcon, fluteIcon, glassIcon, synthIcon, majorIcon, harmonicMinorIcon, melodicMinorIcon, minorPentatonicIcon, majorPentatonicIcon, instrumentIcons, scaleIcons, customInstrumentNames, customScaleNames, colors, sizes, MAX_DELAY, ERASER_COLOR, options, isPointNearDot, isPointNearLineSegment, useBpm, usePlaybackSpeed, useMediaQuery, uuidv4, stopSoundsForLine, preloadSounds, getSvgPathFromStroke, getStroke, getMapRowToNote, setScale, playSound, GridCanvas, firstColumn, fistColumnScan, numDotsX, numDotsY, dotRadius, canvasDimensions, gridConfigurations, setMasterVolume, getStrokeWidthFromOptions, calculateLocalWidth, PaletteIcon, EditIcon } from './import'; // Importing the necessary functions and constants from the import file
 import { mapNoteToSampleNumber, scales } from './soundMappings';
+import { themes, applyTheme, getDefaultTheme, getThemeNames, getThemeDisplayName } from './themes';
 import { Canvg } from 'canvg';
 import pointInPolygon from 'point-in-polygon'; // Import the library
 import { getStrokePoints, getStrokeOutlinePoints } from 'perfect-freehand'; // Importing the necessary functions from perfect-freehand
@@ -50,6 +51,7 @@ const CanvasComponent = () => {
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const settingsMenuRef = useRef(null);
   const [volume, setVolume] = useState(0.8); // Default volume is 80%
+  const [selectedTheme, setSelectedTheme] = useState(getDefaultTheme()); // Default theme selection
   const [activeColorSlot, setActiveColorSlot] = useState(null); // Tracks the slot for which the palette is open
   const colorPaletteRef = useRef(null); // Ref for the color palette modal
 
@@ -590,6 +592,17 @@ const CanvasComponent = () => {
   const handleCloseSettingsMenu = () => {
     setIsSettingsMenuOpen(false); // Close the custom pop-up
   };
+
+  // Handler for theme selection
+  const handleThemeSelection = (themeName) => {
+    setSelectedTheme(themeName);
+    applyTheme(themeName); // Apply the theme immediately
+  };
+
+  // Apply default theme on component mount
+  useEffect(() => {
+    applyTheme(selectedTheme);
+  }, []);
 
   const handleClickOutside = (event) => {
     // Check if the click is outside the scale menu
@@ -1932,12 +1945,33 @@ const CanvasComponent = () => {
         >
           <img src={quitIcon} alt="Close" className="iconQuit" />
         </button>
-        <div className="settings-options-grid">
-          <div className="settings-option">
-            <button className="clean-button" onClick={handleClearScreen}>
-              <img src={CleanIcon} alt="Clean Icon" className="iconClean" />
-            </button>
-            <span className="settings-label">Clean Canvas</span>
+        
+        {/* Theme Subdivision */}
+        <div className="settings-subdivision">
+          <h3 className="subdivision-title">Theme</h3>
+          <div className="theme-options-grid">
+            {getThemeNames().map((themeKey) => (
+              <div key={themeKey} className="theme-option">
+                <button 
+                  className={`theme-button ${selectedTheme === themeKey ? 'active' : ''}`}
+                  onClick={() => handleThemeSelection(themeKey)}
+                >
+                  {getThemeDisplayName(themeKey)}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Other Settings */}
+        <div className="settings-subdivision">
+          <div className="settings-options-grid">
+            <div className="settings-option">
+              <button className="clean-button" onClick={handleClearScreen}>
+                <img src={CleanIcon} alt="Clean Icon" className="iconClean" />
+              </button>
+              <span className="settings-label">Clean Canvas</span>
+            </div>
           </div>
         </div>
       </div>

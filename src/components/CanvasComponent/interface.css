@@ -1593,17 +1593,17 @@ button:hover .instrument-sidebar-icon {
   transform: translate(-50%, -50%);
   background-color: var(--menuColor);
   border: var(--buttonBorderWidth) solid var(--menuColor);
-  padding: 50px;
+  padding: 30px;
   border-radius: var(--modalBorderRadius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  height: 100px;
-  max-width: 550px; /* Adjust to fit within the screen */
-  max-height: 50%; /* Restrict the height */
+  min-height: 200px;
+  max-width: 600px; /* Adjust to fit within the screen */
+  max-height: 70%; /* Restrict the height */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px; /* Add space between items */
+  gap: 20px; /* Add space between items */
   overflow-y: auto; /* Ensure content does not overflow */
   font-family: 'Roboto', sans-serif; /* Apply font */
 }
@@ -1669,6 +1669,69 @@ button:hover .instrument-sidebar-icon {
   width: 24px;
   height: 24px;
   filter: var(--iconFilter);
+}
+
+/* Settings Subdivisions */
+.settings-subdivision {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.subdivision-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--modalLabelTextColor);
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 2px solid var(--borderColor);
+  padding-bottom: 5px;
+}
+
+/* Theme Options Grid */
+.theme-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  justify-items: center;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.theme-button {
+  width: 120px;
+  height: 40px;
+  border: 2px solid var(--borderColor);
+  border-radius: var(--buttonBorderRadius);
+  background-color: var(--buttonColor);
+  color: var(--buttonTextColor);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-button:hover {
+  background-color: var(--hoverBackground);
+  transform: scale(1.02);
+}
+
+.theme-button.active {
+  background-color: var(--activeBackground);
+  border-color: var(--activeBorderColor);
+  color: var(--activeTextColor);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.theme-button:not(.active):hover {
+  opacity: 0.8;
 }
 
 .color-palette-modal {
